@@ -248,31 +248,76 @@ void main() {
 const RESIDUAL_FRAG = `#version 300 es
 precision highp float;
 
-uniform float u_residuals[10];  // current residual per layer
-uniform float u_layerX[10];     // x-position of each layer column
+uniform float u_residuals[10];
+uniform float u_layerX[10];
 uniform int u_numLayers;
+uniform float u_time;
 
 in vec2 v_uv;
 
 out vec4 fragColor;
 
+// Film grain noise
+float hash(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+float grain(vec2 uv, float t) {
+    // Animated fine grain — shifts each frame
+    return hash(uv * 800.0 + t * 7.3) * 0.7 + 0.3;
+}
+
 void main() {
-    // Accumulate glow from all layer columns
-    float glow = 0.0;
+    // Average residual strength across all layers
+    float avgRes = 0.0;
+    float maxRes = 0.0;
+    for (int i = 0; i < 10; i++) {
+        if (i >= u_numLayers) break;
+        avgRes += u_residuals[i];
+        maxRes = max(maxRes, u_residuals[i]);
+    }
+    avgRes /= float(u_numLayers);
+
+    // Per-layer residual at this x position — sharp modulation per column
+    float localRes = 0.0;
     for (int i = 0; i < 10; i++) {
         if (i >= u_numLayers) break;
         float dist = abs(v_uv.x - u_layerX[i]);
-        // Wide gaussian centered on each layer column
-        float influence = exp(-dist * dist / 0.008) * u_residuals[i];
-        glow += influence;
+        // Tight influence — beam visibly brightens/dims at each layer
+        localRes = max(localRes, exp(-dist * dist / 0.004) * u_residuals[i]);
     }
+    // Ensure a baseline so the beam is always faintly visible
+    localRes = 0.08 + localRes * 0.92;
 
-    // Deep blue, atmospheric
-    vec3 blue = vec3(0.06, 0.10, 0.30);
-    float alpha = glow * 0.25;
+    // ── Crystal blue beam cutting horizontally through centre ──
+    float beamY = abs(v_uv.y - 0.5);
+
+    // Bright core — razor thin
+    float core = exp(-beamY * beamY / 0.0003) * 1.2;
+    // Soft glow halo around the core
+    float halo = exp(-beamY * beamY / 0.003) * 0.4;
+    // Wide atmospheric wash
+    float wash = exp(-beamY * beamY / 0.02) * 0.1;
+
+    float beam = (core + halo + wash) * (0.3 + 0.7 * localRes);
+
+    // Film grain on the wash only (not the core)
+    float g = grain(v_uv, u_time);
+    float grainedBeam = core * localRes + (halo + wash) * localRes * g;
+    beam = core * (0.3 + 0.7 * localRes) + (halo + wash) * (0.2 + 0.5 * localRes) * g;
+
+    // Crystal blue — bright, saturated
+    vec3 crystalBlue = vec3(0.25, 0.50, 1.0);
+    // Slight warmth at high intensity
+    vec3 beamColor = mix(crystalBlue, vec3(0.5, 0.7, 1.0), core * 0.3);
+
+    float alpha = beam * 0.5;
     if (alpha < 0.001) discard;
 
-    fragColor = vec4(blue * alpha, alpha);
+    alpha = min(alpha, 0.5);
+    fragColor = vec4(beamColor * alpha, alpha);
 }
 `
 
@@ -309,17 +354,39 @@ function neuronColor(layerIdx: number, neuronIdx: number, npl: number): [number,
   return hslToRgb(hue, 0.70 + rng() * 0.25, 0.50 + rng() * 0.15)
 }
 
-// Left-to-right column layout
+// Lens/eye layout — outer layers span full height and curve,
+// inner layers compress into the vertical centre
+function warpedLayerX(layerIdx: number, totalLayers: number): number {
+  const t = layerIdx / Math.max(totalLayers - 1, 1)
+  // Stretch edge spacing, compress middle — room for the curving input/output
+  const warp = t - 0.18 * Math.sin(Math.PI * t)
+  return 0.10 + warp * 0.80
+}
+
 function neuronPosition(
   layerIdx: number, neuronIdx: number,
   totalLayers: number, npl: number
 ): [number, number] {
   const rng = mulberry32((layerIdx * npl + neuronIdx) * 1337)
-  const mx = 0.06
-  const x = mx + (layerIdx / Math.max(totalLayers - 1, 1)) * (1.0 - 2 * mx)
-  const my = 0.06
-  const y = my + rng() * (1.0 - 2 * my)
-  return [x, y]
+  const t = layerIdx / Math.max(totalLayers - 1, 1)
+  const baseX = warpedLayerX(layerIdx, totalLayers)
+
+  // Vertical spread: outer layers span full height, inner layers
+  // compress into the middle half — creating the lens/iris shape
+  const tFromEdge = Math.min(t, 1.0 - t) * 2 // 0 at edges, 1 at centre
+  const verticalSpread = 1.0 - tFromEdge * 0.82 // 1.0 at edges, 0.18 at centre
+  const baseY = rng() - 0.5
+  const y = 0.5 + baseY * verticalSpread * 0.88
+
+  // Column curvature: ) at layer 0, | in middle, ( at layer 9
+  const bendDirection = -(t - 0.5) * 2
+  const bendStrength = 0.20
+  const yCenter = y - 0.5
+  const edgeBow = 4.0 * yCenter * yCenter
+  const xBend = bendDirection * bendStrength * edgeBow
+
+  const x = baseX + xBend
+  return [Math.max(0.02, Math.min(0.98, x)), Math.max(0.04, Math.min(0.96, y))]
 }
 
 // Cubic bezier evaluation
@@ -416,7 +483,7 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
         return lines
       }
 
-      const sampleIdx = Math.floor(Math.random() * 5)
+      const sampleIdx = Math.floor(Math.random() * 6)
       const [metaLines, sampleLines] = await Promise.all([
         streamJsonl("/kairos/meta.jsonl"),
         streamJsonl(`/kairos/sample_${sampleIdx}.jsonl`),
@@ -635,10 +702,10 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
           }
         }
       }
-      // Layer x-positions for the shader
+      // Layer x-positions for the shader (warped to match neuron positions)
       const layerXPositions = new Float32Array(nLayers)
       for (let l = 0; l < nLayers; l++) {
-        layerXPositions[l] = 0.06 + (l / Math.max(nLayers - 1, 1)) * 0.88
+        layerXPositions[l] = warpedLayerX(l, nLayers)
       }
       // Full-screen quad (2 triangles)
       const quadBuf = new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1])
@@ -738,6 +805,7 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       gl.uniform1fv(gl.getUniformLocation(rProg, "u_layerX[0]"), layerXPositions)
       gl.uniform1i(gl.getUniformLocation(rProg, "u_numLayers"), nLayers)
       const ruResiduals = gl.getUniformLocation(rProg, "u_residuals[0]")!
+      const ruTime = gl.getUniformLocation(rProg, "u_time")!
 
       // Resize
       function resize() {
@@ -764,10 +832,11 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
         gl!.enable(gl!.BLEND)
         gl!.blendFunc(gl!.ONE, gl!.ONE)
 
-        // 1. Residual CMB (deep blue atmospheric glow — drawn first)
+        // 1. Residual CMB (grainy atmospheric glow — drawn first)
         const currentTs = Math.floor(now) % timesteps
         gl!.useProgram(rProg)
         gl!.uniform1fv(ruResiduals, residualByTs[currentTs] || new Float32Array(nLayers))
+        gl!.uniform1f(ruTime, now * 0.1)
         gl!.bindVertexArray(rVao)
         gl!.drawArrays(gl!.TRIANGLES, 0, 6)
         gl!.bindVertexArray(null)
