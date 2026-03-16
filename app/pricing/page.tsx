@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Simple, transparent pricing for sovereign AI compute. Start free with BYO GPU or pay-as-you-go with credit packs.",
+    "Simple, transparent pricing for sovereign AI compute. BYO GPU for free, or pay as you go from $0.20/hr.",
 }
 
 const TIERS = [
@@ -12,53 +12,36 @@ const TIERS = [
     price: "Free",
     period: "",
     description:
-      "Bring your own hardware. We provide the platform, orchestration, and API.",
+      "Bring your own hardware. We manage the platform, orchestration, scheduling, and multi-user access.",
     features: [
-      "Connect your GPU to the Yarn cluster",
+      "Connect your GPUs to the Yarn network",
+      "Institutional SSO and org management",
+      "Multi-user with per-researcher budgets",
       "Full inference and training API access",
       "Australian data residency guaranteed",
-      "OpenAI-compatible endpoints",
-      "Community support via GitHub",
+      "Overflow to shared pool at cost + 10%",
     ],
     cta: "Get started",
     href: "https://account.yarn.prosodylabs.com.au",
     highlight: false,
   },
   {
-    name: "Credit packs",
-    price: "From $10",
-    period: "",
+    name: "Pay as you go",
+    price: "From $0.20/hr",
+    period: "AUD",
     description:
-      "Pay-as-you-go GPU compute. Buy credits, use them when you need them.",
+      "Top up your balance and use it for anything — training jobs, interactive sessions, chat, or API inference. Billed per-second in AUD.",
     features: [
       "RTX 4090 and H100 GPU access",
       "Per-second billing — no idle charges",
-      "No markup — 1 credit = $1 AUD",
-      "Training jobs, inference, and sessions",
-      "Priority support",
-      "Budget limits and auto-reload",
+      "No subscriptions, no lock-in",
+      "Training jobs, sessions, and notebooks",
+      "Chat and API inference (sovereign models)",
+      "Budget controls and auto-reload",
     ],
-    cta: "Buy credits",
+    cta: "Add balance",
     href: "https://account.yarn.prosodylabs.com.au/dashboard/credits",
     highlight: true,
-  },
-  {
-    name: "Research",
-    price: "Custom",
-    period: "",
-    description:
-      "Dedicated GPU capacity for research labs and institutions. Billed monthly or by grant.",
-    features: [
-      "Reserved GPU allocation",
-      "Multi-user accounts with per-user quotas",
-      "Institutional invoicing (PO/grant codes)",
-      "Custom model deployment",
-      "Direct engineering support",
-      "SLA guarantees",
-    ],
-    cta: "Contact us",
-    href: "mailto:jordan@prosodylabs.com.au",
-    highlight: false,
   },
 ]
 
@@ -78,9 +61,9 @@ export default function PricingPage() {
             Simple, transparent pricing
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary">
-            Start free with your own GPU. Pay only for what you use with credit
-            packs. Or talk to us about dedicated capacity for your research
-            team.
+            BYO GPU is free — we manage the platform, you bring the hardware.
+            Need more compute? Pay as you go, billed per-second in AUD. No
+            subscriptions, no reserved instances.
           </p>
         </div>
       </section>
@@ -88,7 +71,7 @@ export default function PricingPage() {
       {/* Tiers */}
       <section className="pb-24">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
             {TIERS.map((tier) => (
               <div
                 key={tier.name}
