@@ -104,7 +104,7 @@ export default function HomePage() {
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sovereign/30 bg-sovereign-muted/50 px-4 py-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-sovereign" />
             <span className="text-xs font-medium text-sovereign">
-              Australian sovereign infrastructure
+              Built in Perth, Western Australia
             </span>
           </div>
 
@@ -115,8 +115,9 @@ export default function HomePage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary sm:text-xl">
-            GPU compute, model hosting, and training jobs — with data that
-            stays in Australia. One API, from laptop to cluster.
+            GPU compute, model hosting, and training jobs — built and
+            operated in Western Australia. Your data never leaves Australian
+            soil. One API, from laptop to cluster.
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

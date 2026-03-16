@@ -46,9 +46,9 @@ const TIERS = [
 ]
 
 const GPU_RATES = [
-  { name: "RTX 4090", vram: "24 GB", rate: "$0.50/hr" },
-  { name: "H100 SXM", vram: "80 GB", rate: "$2.50/hr" },
-  { name: "T4", vram: "16 GB", rate: "$0.20/hr" },
+  { name: "RTX 4090", vram: "24 GB", sovereign: "$0.50/hr", overseas: "$0.40/hr" },
+  { name: "H100 SXM", vram: "80 GB", sovereign: "$3.00/hr", overseas: "$2.40/hr" },
+  { name: "T4", vram: "16 GB", sovereign: "$0.30/hr", overseas: "$0.24/hr" },
 ]
 
 export default function PricingPage() {
@@ -178,7 +178,8 @@ export default function PricingPage() {
             </table>
           </div>
           <p className="mt-4 text-center text-xs text-foreground-muted">
-            Rates are in AUD. All compute runs on Australian infrastructure.
+            Rates are in AUD. Sovereign compute runs on bare-metal
+            infrastructure in Perth, Western Australia.
           </p>
         </div>
       </section>
