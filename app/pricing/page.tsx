@@ -183,6 +183,36 @@ export default function PricingPage() {
           </p>
         </div>
       </section>
+
+      {/* Providers */}
+      <section className="py-24">
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <h2 className="text-2xl font-bold text-foreground">
+            One platform, multiple GPU providers
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-foreground-secondary">
+            Yarn manages your compute across sovereign Australian hardware and
+            global GPU cloud providers. Same API, same SDK, same budget
+            controls — regardless of where the GPU lives.
+          </p>
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-foreground-muted">
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-lg font-semibold text-foreground">Prosody Labs</span>
+              <span className="text-xs">Perth, WA — Sovereign</span>
+            </div>
+            <div className="h-8 w-px bg-border-subtle" />
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-lg font-semibold text-foreground">Lambda Labs</span>
+              <span className="text-xs">US — H100, A100, B200</span>
+            </div>
+          </div>
+          <p className="mt-8 text-sm text-foreground-secondary">
+            Sovereign jobs stay in Australia. When you need more capacity,
+            Yarn provisions cloud GPUs automatically and routes your workload —
+            you never manage a cloud account.
+          </p>
+        </div>
+      </section>
     </div>
   )
 }
