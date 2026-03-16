@@ -72,7 +72,7 @@ const PRICING_TIERS = [
     features: [
       "RTX 4090 & H100 access",
       "Per-second billing",
-      "Bulk discounts up to 20%",
+      "No markup — 1 credit = $1 AUD",
       "Priority support",
     ],
     cta: "Buy credits",

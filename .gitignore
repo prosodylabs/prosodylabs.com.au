@@ -11,7 +11,7 @@ out/
 
 # Dependencies
 node_modules/
-bun.lock
+bun.lockb
 
 # Build
 *.tsbuildinfo

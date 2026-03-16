@@ -33,7 +33,7 @@ const TIERS = [
     features: [
       "RTX 4090 and H100 GPU access",
       "Per-second billing — no idle charges",
-      "Bulk discounts up to 20% ($500 pack)",
+      "No markup — 1 credit = $1 AUD",
       "Training jobs, inference, and sessions",
       "Priority support",
       "Budget limits and auto-reload",
