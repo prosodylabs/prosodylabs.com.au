@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ==========================================================================
+     Prosody Labs — Yarn Design System (Dark Theme)
+     Eucalyptus Sage palette, matching Yarn Chat / Account Portal / Research Portal
+     ========================================================================== */
+
+  :root {
+    /* Backgrounds */
+    --background: 120 4% 7%;
+    --background-elevated: 120 4% 10%;
+    --background-surface: 120 4% 13%;
+    --background-hover: 120 4% 17%;
+
+    /* Foregrounds */
+    --foreground: 100 8% 92%;
+    --foreground-secondary: 110 6% 65%;
+    --foreground-muted: 110 5% 55%;
+    --foreground-faint: 110 4% 32%;
+
+    /* Primary — Eucalyptus Sage */
+    --primary: 113 11% 56%;
+    --primary-hover: 113 14% 50%;
+    --primary-muted: 113 8% 25%;
+    --primary-faint: 113 6% 18%;
+    --primary-foreground: 100 8% 98%;
+
+    /* Secondary — Dusty Mauve */
+    --secondary: 293 11% 56%;
+    --secondary-foreground: 100 8% 98%;
+
+    /* Analogous variants */
+    --accent-cool: 144 11% 56%;
+    --accent-warm: 86 11% 56%;
+
+    /* UI colors */
+    --muted: 120 4% 15%;
+    --muted-foreground: 110 6% 65%;
+    --accent: 113 8% 20%;
+    --accent-foreground: 100 8% 92%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 100 8% 98%;
+    --card: 120 4% 10%;
+    --card-foreground: 100 8% 92%;
+
+    /* Borders */
+    --border: 120 4% 20%;
+    --border-subtle: 120 4% 15%;
+    --input: 120 4% 22%;
+    --ring: 113 11% 56%;
+
+    /* Sovereignty */
+    --sovereign: 113 25% 55%;
+    --sovereign-muted: 113 15% 18%;
+
+    /* Radii */
+    --radius: 0.625rem;
+    --radius-lg: 1.25rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: hsl(113 11% 56% / 0.3);
+  color: hsl(100 8% 98%);
+}
