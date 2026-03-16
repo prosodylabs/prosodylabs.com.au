@@ -11,34 +11,37 @@ export default function LabPage() {
   const [passageText, setPassageText] = useState("")
   const [displayedChars, setDisplayedChars] = useState(0)
   const [passageName, setPassageName] = useState("")
+  const [isBow, setIsBow] = useState(false)
   const startTimeRef = useRef<number>(0)
   const tpsRef = useRef(10)
-  const timestepsRef = useRef(256)
+  const timestepsRef = useRef(600)
+  const totalDurationRef = useRef(680)
 
   const handleSampleLoaded = useCallback(
-    (name: string, text: string, timesteps: number, tps: number) => {
+    (name: string, text: string, timesteps: number, totalDuration: number, tps: number) => {
       setPassageName(name.replace(/_/g, " "))
       setPassageText(text)
       tpsRef.current = tps
       timestepsRef.current = timesteps
+      totalDurationRef.current = totalDuration
       startTimeRef.current = performance.now()
     },
     []
   )
 
-  // Typewriter synced to animation timing
+  // Typewriter synced to animation loop including curtain call
   useEffect(() => {
     if (!passageText) return
 
     let raf: number
     function tick() {
       const elapsed = (performance.now() - startTimeRef.current) / 1000
-      const currentTimestep =
-        (elapsed * tpsRef.current) % timestepsRef.current
-      // Map timestep progress to text position
-      const progress = currentTimestep / timestepsRef.current
-      const chars = Math.floor(progress * passageText.length)
+      const loopPos = (elapsed * tpsRef.current) % totalDurationRef.current
+      // Typing happens over timesteps; holds during curtain call
+      const typingProgress = Math.min(loopPos / timestepsRef.current, 1.0)
+      const chars = Math.floor(typingProgress * passageText.length)
       setDisplayedChars(chars)
+      setIsBow(loopPos > timestepsRef.current)
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
@@ -73,21 +76,35 @@ export default function LabPage() {
           </p>
         </div>
 
-        {/* Typewriter passage — bottom of hero */}
+        {/* Typewriter passage — windowed at bottom of hero */}
         {passageText && (
-          <div className="absolute inset-x-0 bottom-36 z-10 px-6">
+          <div className={`absolute inset-x-0 bottom-24 z-10 px-6 transition-opacity duration-1000 ${
+            isBow ? "opacity-100" : "opacity-70"
+          }`}>
             <div className="mx-auto max-w-2xl">
               {passageName && (
-                <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-widest text-foreground-faint">
+                <p className={`mb-2 text-center font-mono text-[10px] uppercase tracking-widest transition-colors duration-1000 ${
+                  isBow ? "text-foreground-secondary" : "text-foreground-faint"
+                }`}>
                   {passageName}
                 </p>
               )}
-              <p className="whitespace-pre-line text-center font-mono text-xs leading-relaxed text-foreground-muted/70">
-                {passageText.slice(0, displayedChars)}
-                <span className="animate-pulse text-foreground-muted">
-                  |
-                </span>
-              </p>
+              {/* Fixed-height window — text anchored to bottom, top fades out */}
+              <div className="relative h-20 overflow-hidden">
+                <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-10 bg-gradient-to-b from-background to-transparent" />
+                <div className="absolute inset-x-0 bottom-0">
+                  <p className={`whitespace-pre-line text-center font-mono text-xs leading-relaxed transition-colors duration-1000 ${
+                    isBow ? "text-foreground-secondary" : "text-foreground-muted/70"
+                  }`}>
+                    {passageText.slice(0, displayedChars)}
+                    <span className={`transition-opacity duration-500 ${
+                      isBow ? "opacity-0" : "animate-pulse text-foreground-muted"
+                    }`}>
+                      |
+                    </span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}

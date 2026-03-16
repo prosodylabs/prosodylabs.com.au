@@ -112,10 +112,10 @@ void main() {
     float afterglow = echo1 + echo2;
 
     // Intensities
-    float sparkIntensity = (head + trail * 0.5) * (0.2 + 0.5 * v_magnitude);
+    float sparkIntensity = (head + trail * 0.5) * (0.3 + 0.6 * v_magnitude);
     float afterIntensity = afterglow * (0.3 + 0.4 * v_magnitude);
 
-    float totalIntensity = min(sparkIntensity + afterIntensity, 0.6);
+    float totalIntensity = min(sparkIntensity + afterIntensity, 0.8);
     if (totalIntensity < 0.002) discard;
 
     // Colour blend: neuron hue → deep blue fading to black
@@ -162,9 +162,9 @@ void main() {
     float decay = exp(-normalizedAge * 2.5);
 
     // Brighter and bigger when more connections fire into this node
-    float importance = 0.4 + 0.6 * max(a_magnitude, a_fanIn);
-    v_alpha = entrance * decay * importance;
-    v_color = a_color * (0.5 + 0.5 * importance);
+    float importance = 0.5 + 0.5 * max(a_magnitude, a_fanIn);
+    v_alpha = entrance * decay * importance * 1.3;
+    v_color = a_color * (0.6 + 0.4 * importance);
 
     gl_Position = vec4(a_position * 2.0 - 1.0, 0.0, 1.0);
     // Size scales with magnitude AND fan-in
@@ -316,7 +316,7 @@ void main() {
     float alpha = beam * 0.5;
     if (alpha < 0.001) discard;
 
-    alpha = min(alpha, 0.5);
+    alpha = min(alpha, 0.6);
     fragColor = vec4(beamColor * alpha, alpha);
 }
 `
@@ -435,18 +435,18 @@ function linkProgram(gl: WebGL2RenderingContext, vs: string, fs: string): WebGLP
 
 // ─── Constants ────────────────────────────────────────────
 
-const TPS = 10
+const TPS = 6
 const DOT_FADE = 6.0
 const SPARK_TRAVEL = 2.0
 const SPARK_TRAIL = 6.0
-const SAMPLE_GAP = 20
-const CURVE_SEGMENTS = 6        // smooth bezier curves
-const MAX_EDGES = 8000          // cap for performance
+const CURTAIN_CALL = 80         // timesteps of silence after last spike (8 seconds)
+const CURVE_SEGMENTS = 4
+const MAX_EDGES = 5000
 
 // ─── Component ────────────────────────────────────────────
 
 interface KairosLabProps {
-  onSampleLoaded?: (name: string, text: string, timesteps: number, tps: number) => void
+  onSampleLoaded?: (name: string, text: string, timesteps: number, totalDuration: number, tps: number) => void
 }
 
 export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
@@ -513,8 +513,6 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
         spikes, membrane, residual,
       }
 
-      onSampleLoaded?.(sample.name, sample.text, meta.timesteps, TPS)
-
       const { layers: nLayers, neurons_per_layer: npl, timesteps } = meta
       const magMin = meta.magnitude_range?.[0] ?? 5.0
       const magMax = meta.magnitude_range?.[1] ?? 46.3
@@ -524,8 +522,10 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       const normMag = (m: number) =>
         Math.min(1.0, 0.15 + 0.85 * Math.max(0.0, (Math.log(m) - logMin) / logRange))
 
-      // Single sample — loops continuously
-      const totalDuration = timesteps
+      // Single sample + curtain call pause before loop
+      const totalDuration = timesteps + CURTAIN_CALL
+
+      onSampleLoaded?.(sample.name, sample.text, timesteps, totalDuration, TPS)
 
       // Pre-compute positions and colors
       const pos: [number, number][][] = []
@@ -668,7 +668,7 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
         }
       }
       // Subsample if too many (keep every Nth for performance)
-      const MAX_MEMBRANE = 50000
+      const MAX_MEMBRANE = 30000
       const memSkip = Math.max(1, Math.ceil(membraneEntries.length / MAX_MEMBRANE))
       const memFiltered = memSkip > 1
         ? membraneEntries.filter((_, i) => i % memSkip === 0)
@@ -712,7 +712,7 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
 
       // ── WebGL ──
       const gl = canvas!.getContext("webgl2", {
-        alpha: true, premultipliedAlpha: false, antialias: true,
+        alpha: true, premultipliedAlpha: false, antialias: false,
       })
       if (!gl || disposed) return
 
@@ -832,10 +832,20 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
         gl!.enable(gl!.BLEND)
         gl!.blendFunc(gl!.ONE, gl!.ONE)
 
-        // 1. Residual CMB (grainy atmospheric glow — drawn first)
-        const currentTs = Math.floor(now) % timesteps
+        // 1. Residual beam (crystal blue — flares during curtain call)
+        const currentTs = Math.min(Math.floor(now), timesteps - 1)
+        const curtainProgress = Math.max(0, now - timesteps) / CURTAIN_CALL // 0→1 during bow
+        // During bow: gate residuals way up, flooding the canvas crystal blue
+        const bowFlare = curtainProgress > 0
+          ? 1.0 + 4.0 * Math.sin(curtainProgress * Math.PI) // peaks at mid-bow
+          : 1.0
+        const flaredResiduals = new Float32Array(nLayers)
+        const baseResiduals = residualByTs[currentTs] || new Float32Array(nLayers)
+        for (let i = 0; i < nLayers; i++) {
+          flaredResiduals[i] = Math.min(baseResiduals[i] * bowFlare, 3.0)
+        }
         gl!.useProgram(rProg)
-        gl!.uniform1fv(ruResiduals, residualByTs[currentTs] || new Float32Array(nLayers))
+        gl!.uniform1fv(ruResiduals, flaredResiduals)
         gl!.uniform1f(ruTime, now * 0.1)
         gl!.bindVertexArray(rVao)
         gl!.drawArrays(gl!.TRIANGLES, 0, 6)
