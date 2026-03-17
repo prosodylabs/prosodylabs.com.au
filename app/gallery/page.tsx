@@ -154,21 +154,6 @@ export default function GalleryPage() {
               connections, coloured by its source.
             </p>
             <p>
-              The deep blue afterglow that follows each spark is the
-              residual signal — the skip connection that carries
-              information forward without processing it. In the quiet
-              layers where few neurons fire, the residual is what keeps
-              the signal alive. The crystal blue beam through the centre
-              tracks this residual strength across the network.
-            </p>
-            <p>
-              The lens shape reflects the architecture: input and output
-              layers span full height (every possibility), while hidden
-              layers compress to a narrow band (selective, discriminating).
-              The outer columns curve inward, wrapping around the
-              processing core like a dish antenna.
-            </p>
-            <p>
               Both architectures are Kairos — spiking networks that
               learn patience. The{" "}
               <strong className="text-foreground">spiking network</strong>{" "}
