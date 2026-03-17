@@ -1,4 +1,5 @@
 import { Hero } from "@/components/hero"
+import { SdkShowcase } from "@/components/sdk-showcase"
 
 const FEATURES = [
   {
@@ -125,86 +126,32 @@ export default function HomePage() {
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                Three lines to GPU
+                One install to GPU
               </h2>
               <p className="mt-4 text-foreground-secondary">
-                The Yarn SDK handles authentication, job submission, and result
-                retrieval. Install it, point it at your code, and let the
-                platform handle the rest.
+                One command registers your machine, detects your GPUs, and
+                joins the network. No Kubernetes, no Docker, no config
+                files. Submit training jobs, launch interactive GPU
+                sessions, or register models for inference — all through
+                the same SDK.
               </p>
               <p className="mt-6 text-foreground-secondary">
-                OpenAI-compatible inference is even simpler — change the base
-                URL and you&apos;re done.
+                Bring your own GPU for free. Need more compute? Set a
+                budget and Yarn provisions on demand — per-second billing,
+                no surprises.
               </p>
               <a
                 href="https://account.yarn.prosodylabs.com.au/docs"
                 className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary-hover"
               >
                 Read the docs
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="h-4 w-4"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                    clipRule="evenodd"
-                  />
+                <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                  <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
                 </svg>
               </a>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-border-subtle bg-background">
-              {/* Tab bar */}
-              <div className="flex items-center gap-4 border-b border-border-subtle px-5 py-3">
-                <span className="text-xs font-medium text-foreground">
-                  Training job
-                </span>
-                <span className="text-xs text-foreground-faint">|</span>
-                <span className="text-xs text-foreground-muted">
-                  Inference
-                </span>
-              </div>
-              <pre className="overflow-x-auto p-5 text-sm leading-relaxed">
-                <code>
-                  <span className="text-foreground-muted">
-                    $ pip install yarn-au
-                  </span>
-                  {"\n\n"}
-                  <span className="text-primary">import</span>
-                  <span className="text-foreground"> yarn</span>
-                  {"\n\n"}
-                  <span className="text-foreground">job </span>
-                  <span className="text-foreground-muted">= </span>
-                  <span className="text-foreground">yarn.</span>
-                  <span className="text-accent-cool">submit_job</span>
-                  <span className="text-foreground">(</span>
-                  {"\n"}
-                  <span className="text-foreground">{"    "}directory</span>
-                  <span className="text-foreground-muted">=</span>
-                  <span className="text-accent-warm">
-                    &quot;./my-experiment&quot;
-                  </span>
-                  <span className="text-foreground">,</span>
-                  {"\n"}
-                  <span className="text-foreground">{"    "}gpu</span>
-                  <span className="text-foreground-muted">=</span>
-                  <span className="text-accent-warm">
-                    &quot;rtx4090&quot;
-                  </span>
-                  {"\n"}
-                  <span className="text-foreground">)</span>
-                  {"\n\n"}
-                  <span className="text-foreground">job.</span>
-                  <span className="text-accent-cool">wait</span>
-                  <span className="text-foreground">()</span>
-                  {"\n"}
-                  <span className="text-primary">print</span>
-                  <span className="text-foreground">(job.result)</span>
-                </code>
-              </pre>
-            </div>
+            <SdkShowcase />
           </div>
         </div>
       </section>
