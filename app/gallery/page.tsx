@@ -206,16 +206,8 @@ export default function GalleryPage() {
                 do not fire on a schedule. They accumulate evidence —
                 membrane potential building toward a threshold — and fire
                 only when that evidence is sufficient. Patience,
-                operationalised as architecture. The{" "}
-                <a
-                  href="https://research.uwa.edu.au"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:text-primary-hover"
-                >
-                  research behind this
-                </a>{" "}
-                asks whether that structural patience produces
+                operationalised as architecture. The research behind
+                this asks whether that structural patience produces
                 understanding that is genuinely different from systems
                 that simply learn to produce well-timed outputs — whether
                 there is a real difference between acting{" "}
@@ -236,6 +228,9 @@ export default function GalleryPage() {
                 worthwhile.
               </p>
             </div>
+            <p className="mt-10 text-xs text-foreground-faint">
+              — Jordan Hill, Director of Research, Prosody Labs
+            </p>
           </div>
         </div>
       </section>
