@@ -47,7 +47,7 @@ export function Hero() {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-background">
-        <KairosVisualization onSampleLoaded={handleSampleLoaded} />
+        <KairosVisualization network="spiking" onSampleLoaded={handleSampleLoaded} />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />

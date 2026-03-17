@@ -6,7 +6,7 @@ import Link from "next/link"
 const NAV_ITEMS = [
   { label: "About", href: "/about" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Docs", href: "https://account.yarn.prosodylabs.com.au/docs" },
+  { label: "Docs", href: "/docs" },
 ]
 
 export function Header() {

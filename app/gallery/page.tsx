@@ -8,8 +8,11 @@ const KairosVisualization = dynamic(
   { ssr: false }
 )
 
+const NETWORKS: ("spiking" | "transformer")[] = ["spiking", "transformer"]
+
 export default function GalleryPage() {
   const [activeNetwork, setActiveNetwork] = useState<"spiking" | "transformer">("spiking")
+  const touchStartX = useRef(0)
   const [passageText, setPassageText] = useState("")
   const [passageName, setPassageName] = useState("")
   const [displayedChars, setDisplayedChars] = useState(0)
@@ -48,8 +51,19 @@ export default function GalleryPage() {
 
   return (
     <div className="pt-14">
-      {/* Full-screen visualization — no title blocking the view */}
-      <section className="relative flex h-[85vh] items-end justify-center overflow-hidden">
+      {/* Full-screen visualization — swipe left/right to switch */}
+      <section
+        className="relative flex h-[85vh] items-end justify-center overflow-hidden"
+        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX }}
+        onTouchEnd={(e) => {
+          const dx = e.changedTouches[0].clientX - touchStartX.current
+          if (Math.abs(dx) > 60) {
+            const idx = NETWORKS.indexOf(activeNetwork)
+            const next = dx < 0 ? (idx + 1) % NETWORKS.length : (idx - 1 + NETWORKS.length) % NETWORKS.length
+            setActiveNetwork(NETWORKS[next])
+          }
+        }}
+      >
         <div className="absolute inset-0 bg-background">
           <KairosVisualization
             network={activeNetwork}
@@ -82,6 +96,9 @@ export default function GalleryPage() {
             Transformer
           </button>
         </div>
+        <p className="absolute left-6 top-16 z-10 font-mono text-[10px] text-foreground-faint md:hidden">
+          swipe to switch
+        </p>
 
         {/* Typewriter — bottom of visualization */}
         {passageText && (
