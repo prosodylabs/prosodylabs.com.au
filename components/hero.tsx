@@ -99,8 +99,8 @@ export function Hero() {
             <div className="relative h-16 overflow-hidden">
               <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background to-transparent" />
               <div className="absolute inset-x-0 bottom-0">
-                <p className={`whitespace-pre-line text-center font-mono text-xs leading-relaxed transition-colors duration-1000 ${
-                  isBow ? "text-foreground-secondary" : "text-foreground-muted/50"
+                <p className={`whitespace-pre-line text-center font-mono text-xs leading-relaxed transition-colors duration-1000 md:text-sm ${
+                  isBow ? "text-foreground" : "text-foreground-muted"
                 }`}>
                   {passageText.slice(0, displayedChars)}
                   <span className={`transition-opacity duration-500 ${

@@ -18,14 +18,9 @@ const COLUMNS = [
   {
     title: "Resources",
     links: [
-      {
-        label: "Documentation",
-        href: "https://account.yarn.prosodylabs.com.au/docs",
-      },
-      {
-        label: "API reference",
-        href: "https://account.yarn.prosodylabs.com.au/docs",
-      },
+      { label: "Kairos Gallery", href: "/gallery" },
+      { label: "Documentation", href: "/docs" },
+      { label: "API reference", href: "/docs/api-reference" },
       { label: "GitHub", href: "https://github.com/prosodylabs/yarn" },
     ],
   },

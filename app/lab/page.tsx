@@ -70,7 +70,7 @@ export default function LabPage() {
                   : "text-foreground-muted hover:text-foreground"
               }`}
             >
-              Spiking
+              Kairos Network
             </button>
             <button
               onClick={() => setNetwork("transformer")}
@@ -80,7 +80,7 @@ export default function LabPage() {
                   : "text-foreground-muted hover:text-foreground"
               }`}
             >
-              Transformer
+              Kairos Transformer
             </button>
           </div>
 

@@ -13,6 +13,23 @@ const NETWORKS: ("spiking" | "transformer")[] = ["spiking", "transformer"]
 export default function GalleryPage() {
   const [activeNetwork, setActiveNetwork] = useState<"spiking" | "transformer">("spiking")
   const touchStartX = useRef(0)
+  const mouseDownX = useRef<number | null>(null)
+
+  // Arrow key navigation
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault()
+        const idx = NETWORKS.indexOf(activeNetwork)
+        const next = e.key === "ArrowRight"
+          ? (idx + 1) % NETWORKS.length
+          : (idx - 1 + NETWORKS.length) % NETWORKS.length
+        setActiveNetwork(NETWORKS[next])
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [activeNetwork])
   const [passageText, setPassageText] = useState("")
   const [passageName, setPassageName] = useState("")
   const [displayedChars, setDisplayedChars] = useState(0)
@@ -53,7 +70,7 @@ export default function GalleryPage() {
     <div className="pt-14">
       {/* Full-screen visualization — swipe left/right to switch */}
       <section
-        className="relative flex h-[85vh] items-end justify-center overflow-hidden"
+        className="relative flex h-[85vh] cursor-grab items-end justify-center overflow-hidden active:cursor-grabbing"
         onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX }}
         onTouchEnd={(e) => {
           const dx = e.changedTouches[0].clientX - touchStartX.current
@@ -63,6 +80,18 @@ export default function GalleryPage() {
             setActiveNetwork(NETWORKS[next])
           }
         }}
+        onMouseDown={(e) => { mouseDownX.current = e.clientX }}
+        onMouseUp={(e) => {
+          if (mouseDownX.current === null) return
+          const dx = e.clientX - mouseDownX.current
+          mouseDownX.current = null
+          if (Math.abs(dx) > 80) {
+            const idx = NETWORKS.indexOf(activeNetwork)
+            const next = dx < 0 ? (idx + 1) % NETWORKS.length : (idx - 1 + NETWORKS.length) % NETWORKS.length
+            setActiveNetwork(NETWORKS[next])
+          }
+        }}
+        onMouseLeave={() => { mouseDownX.current = null }}
       >
         <div className="absolute inset-0 bg-background">
           <KairosVisualization
@@ -83,7 +112,7 @@ export default function GalleryPage() {
                 : "text-foreground-muted hover:text-foreground"
             }`}
           >
-            Spiking
+            Kairos Network
           </button>
           <button
             onClick={() => setActiveNetwork("transformer")}
@@ -93,11 +122,12 @@ export default function GalleryPage() {
                 : "text-foreground-muted hover:text-foreground"
             }`}
           >
-            Transformer
+            Kairos Transformer
           </button>
         </div>
-        <p className="absolute left-6 top-16 z-10 font-mono text-[10px] text-foreground-faint md:hidden">
-          swipe to switch
+        <p className="absolute left-6 top-16 z-10 font-mono text-[10px] text-foreground-faint">
+          <span className="md:hidden">swipe to switch</span>
+          <span className="hidden md:inline">drag or use arrow keys</span>
         </p>
 
         {/* Typewriter — bottom of visualization */}
@@ -116,8 +146,8 @@ export default function GalleryPage() {
               <div className="relative h-16 overflow-hidden">
                 <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background to-transparent" />
                 <div className="absolute inset-x-0 bottom-0">
-                  <p className={`whitespace-pre-line font-mono text-xs leading-relaxed transition-colors duration-1000 ${
-                    isBow ? "text-foreground-secondary" : "text-foreground-muted/50"
+                  <p className={`whitespace-pre-line font-mono text-xs leading-relaxed transition-colors duration-1000 md:text-sm ${
+                    isBow ? "text-foreground" : "text-foreground-muted"
                   }`}>
                     {passageText.slice(0, displayedChars)}
                     <span className={`transition-opacity duration-500 ${
@@ -154,13 +184,13 @@ export default function GalleryPage() {
               connections, coloured by its source.
             </p>
             <p>
-              Both architectures are Kairos — spiking networks that
-              learn patience. The{" "}
-              <strong className="text-foreground">spiking network</strong>{" "}
+              Both architectures are Kairos — networks that learn
+              patience. The{" "}
+              <strong className="text-foreground">Kairos Network</strong>{" "}
               (10 layers, 1024 neurons) is a pure spiking architecture:
               every layer fires selectively, mostly dark, with sudden
               cascades of evidence. The{" "}
-              <strong className="text-foreground">patience transformer</strong>{" "}
+              <strong className="text-foreground">Kairos Transformer</strong>{" "}
               (6 blocks, 384 dimensions) wraps transformer attention in
               Kairos spiking layers — what you see are the spiking neurons
               interpreting the transformer blocks&apos; representations,
