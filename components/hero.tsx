@@ -50,31 +50,31 @@ export function Hero() {
         <KairosVisualization onSampleLoaded={handleSampleLoaded} />
       </div>
 
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(120_4%_7%/0.5)_0%,hsl(120_4%_7%/0.15)_50%,transparent_80%)]" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
-      {/* Hero content */}
+      {/* Frosted glass pane behind text for readability */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sovereign/30 bg-sovereign-muted/50 px-4 py-1.5">
+        <div className="absolute -inset-x-8 -inset-y-6 rounded-3xl border border-border-subtle/30 bg-background/50 backdrop-blur-md" />
+        <div className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-sovereign/30 bg-sovereign-muted/50 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-sovereign" />
           <span className="text-xs font-medium text-sovereign">
             Built in Perth, Western Australia
           </span>
         </div>
 
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+        <h1 className="relative text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           AI infrastructure
           <br />
           <span className="text-primary">for Australian research</span>
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary sm:text-xl">
+        <p className="relative mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary sm:text-xl">
           GPU compute, model hosting, and training jobs — built and
           operated in Western Australia. Your data never leaves Australian
           soil. One API, from laptop to cluster.
         </p>
 
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <div className="relative mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
             href="https://account.yarn.prosodylabs.com.au"
             className="w-full rounded-xl bg-primary px-8 py-3.5 text-base font-medium text-primary-foreground transition-colors hover:bg-primary-hover sm:w-auto"
