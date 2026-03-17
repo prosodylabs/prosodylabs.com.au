@@ -8,12 +8,14 @@ const KairosVisualization = dynamic(
   { ssr: false }
 )
 
-const NETWORKS: ("spiking" | "transformer")[] = ["spiking", "transformer"]
+const SLIDES = [
+  { network: "spiking" as const, label: "Kairos Network" },
+  { network: "transformer" as const, label: "Kairos Transformer" },
+]
 
 export default function GalleryPage() {
-  const [splitPct, setSplitPct] = useState(50) // 0=all spiking, 100=all transformer
-  const dragging = useRef(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
   const [passageText, setPassageText] = useState("")
   const [passageName, setPassageName] = useState("")
   const [displayedChars, setDisplayedChars] = useState(0)
@@ -35,6 +37,20 @@ export default function GalleryPage() {
     []
   )
 
+  // Track which slide is visible via scroll position
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    function onScroll() {
+      if (!el) return
+      const index = Math.round(el.scrollLeft / el.clientWidth)
+      setActiveIndex(index)
+    }
+    el.addEventListener("scroll", onScroll, { passive: true })
+    return () => el.removeEventListener("scroll", onScroll)
+  }, [])
+
+  // Typewriter sync
   useEffect(() => {
     if (!passageText) return
     let raf: number
@@ -50,71 +66,86 @@ export default function GalleryPage() {
     return () => cancelAnimationFrame(raf)
   }, [passageText])
 
+  function scrollTo(index: number) {
+    scrollRef.current?.scrollTo({ left: index * scrollRef.current.clientWidth, behavior: "smooth" })
+  }
+
   return (
     <div className="pt-14">
-      {/* Split-view — both networks live, draggable divider */}
-      <section
-        ref={containerRef}
-        className="relative flex h-[85vh] cursor-col-resize items-end justify-center overflow-hidden select-none"
-        onMouseDown={() => { dragging.current = true }}
-        onMouseUp={() => { dragging.current = false }}
-        onMouseLeave={() => { dragging.current = false }}
-        onMouseMove={(e) => {
-          if (!dragging.current || !containerRef.current) return
-          const rect = containerRef.current.getBoundingClientRect()
-          const pct = ((e.clientX - rect.left) / rect.width) * 100
-          setSplitPct(Math.max(5, Math.min(95, pct)))
-        }}
-        onTouchMove={(e) => {
-          if (!containerRef.current) return
-          const rect = containerRef.current.getBoundingClientRect()
-          const pct = ((e.touches[0].clientX - rect.left) / rect.width) * 100
-          setSplitPct(Math.max(5, Math.min(95, pct)))
-        }}
-      >
-        {/* Bottom layer: Kairos Transformer (right side visible) */}
-        <div className="absolute inset-0 bg-background">
-          <KairosVisualization network="transformer" />
-        </div>
-
-        {/* Top layer: Kairos Network (clipped to left of divider) */}
+      {/* Carousel */}
+      <section className="relative h-[85vh] overflow-hidden">
+        {/* Scroll container */}
         <div
-          className="absolute inset-0 bg-background"
-          style={{ clipPath: `inset(0 ${100 - splitPct}% 0 0)` }}
+          ref={scrollRef}
+          className="flex h-full snap-x snap-mandatory overflow-x-auto scrollbar-none"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
-          <KairosVisualization
-            network="spiking"
-            onSampleLoaded={handleSampleLoaded}
-          />
-        </div>
+          {SLIDES.map((slide, i) => (
+            <div
+              key={slide.network}
+              className="relative h-full w-full flex-none snap-center"
+            >
+              <div className="absolute inset-0 bg-background">
+                <KairosVisualization
+                  network={slide.network}
+                  {...(slide.network === "spiking" ? { onSampleLoaded: handleSampleLoaded } : {})}
+                />
+              </div>
 
-        {/* Divider line */}
-        <div
-          className="absolute top-0 bottom-0 z-20 w-px bg-foreground-faint"
-          style={{ left: `${splitPct}%` }}
-        >
-          {/* Handle grip */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background/80 px-1.5 py-3 backdrop-blur-sm">
-            <div className="flex gap-0.5">
-              <div className="h-6 w-0.5 rounded-full bg-foreground-muted" />
-              <div className="h-6 w-0.5 rounded-full bg-foreground-muted" />
+              {/* Label */}
+              <p className="absolute left-4 top-4 z-10 rounded-full bg-background/60 px-3 py-1 font-mono text-[10px] text-foreground-muted backdrop-blur-sm">
+                {slide.label}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* Labels */}
-        <p className="absolute left-4 top-4 z-10 rounded-full bg-background/60 px-3 py-1 font-mono text-[10px] text-foreground-muted backdrop-blur-sm">
-          Kairos Network
-        </p>
-        <p className="absolute right-4 top-4 z-10 rounded-full bg-background/60 px-3 py-1 font-mono text-[10px] text-foreground-muted backdrop-blur-sm">
-          Kairos Transformer
-        </p>
+        {/* Bottom gradient */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        {/* Navigation dots */}
+        <div className="absolute inset-x-0 bottom-6 z-20 flex items-center justify-center gap-2">
+          {SLIDES.map((slide, i) => (
+            <button
+              key={slide.network}
+              onClick={() => scrollTo(i)}
+              aria-label={slide.label}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === activeIndex
+                  ? "w-6 bg-foreground-muted"
+                  : "w-2 bg-foreground-faint/50 hover:bg-foreground-faint"
+              }`}
+            />
+          ))}
+        </div>
 
-        {/* Typewriter — bottom of visualization */}
+        {/* Arrow hints */}
+        {activeIndex === 0 && (
+          <button
+            onClick={() => scrollTo(1)}
+            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-background/40 p-2 text-foreground-muted backdrop-blur-sm transition-opacity hover:bg-background/60"
+            aria-label="Next"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 4l6 6-6 6" />
+            </svg>
+          </button>
+        )}
+        {activeIndex === 1 && (
+          <button
+            onClick={() => scrollTo(0)}
+            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-background/40 p-2 text-foreground-muted backdrop-blur-sm transition-opacity hover:bg-background/60"
+            aria-label="Previous"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 4l-6 6 6 6" />
+            </svg>
+          </button>
+        )}
+
+        {/* Typewriter overlay — bottom of visualization */}
         {passageText && (
-          <div className={`relative z-10 mb-12 px-6 transition-opacity duration-1000 ${
+          <div className={`pointer-events-none absolute inset-x-0 bottom-12 z-10 px-6 transition-opacity duration-1000 ${
             isBow ? "opacity-100" : "opacity-60"
           }`}>
             <div className="mx-auto max-w-2xl text-center">

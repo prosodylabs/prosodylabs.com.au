@@ -81,3 +81,12 @@ html {
   background: hsl(113 11% 56% / 0.3);
   color: hsl(100 8% 98%);
 }
+
+/* Hide scrollbar for carousel */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
