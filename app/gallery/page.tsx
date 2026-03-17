@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import dynamic from "next/dynamic"
+import { Swiper, SwiperSlide } from "swiper/react"
+import { Pagination, EffectFade } from "swiper/modules"
+import type { Swiper as SwiperType } from "swiper"
+import "swiper/css"
+import "swiper/css/pagination"
 
 const KairosVisualization = dynamic(
   () => import("@/components/kairos-visualization"),
@@ -14,7 +19,6 @@ const SLIDES = [
 ]
 
 export default function GalleryPage() {
-  const scrollRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [passageText, setPassageText] = useState("")
   const [passageName, setPassageName] = useState("")
@@ -24,6 +28,7 @@ export default function GalleryPage() {
   const tpsRef = useRef(6)
   const timestepsRef = useRef(600)
   const totalDurationRef = useRef(680)
+  const swiperRef = useRef<SwiperType | null>(null)
 
   const handleSampleLoaded = useCallback(
     (name: string, text: string, timesteps: number, totalDuration: number, tps: number) => {
@@ -36,19 +41,6 @@ export default function GalleryPage() {
     },
     []
   )
-
-  // Track which slide is visible via scroll position
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    function onScroll() {
-      if (!el) return
-      const index = Math.round(el.scrollLeft / el.clientWidth)
-      setActiveIndex(index)
-    }
-    el.addEventListener("scroll", onScroll, { passive: true })
-    return () => el.removeEventListener("scroll", onScroll)
-  }, [])
 
   // Typewriter sync
   useEffect(() => {
@@ -66,25 +58,22 @@ export default function GalleryPage() {
     return () => cancelAnimationFrame(raf)
   }, [passageText])
 
-  function scrollTo(index: number) {
-    scrollRef.current?.scrollTo({ left: index * scrollRef.current.clientWidth, behavior: "smooth" })
-  }
-
   return (
     <div className="pt-14">
-      {/* Carousel */}
+      {/* Swiper carousel */}
       <section className="relative h-[85vh] overflow-hidden">
-        {/* Scroll container */}
-        <div
-          ref={scrollRef}
-          className="flex h-full snap-x snap-mandatory overflow-x-auto scrollbar-none"
-          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+        <Swiper
+          modules={[Pagination]}
+          slidesPerView={1}
+          onSwiper={(swiper) => { swiperRef.current = swiper }}
+          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+          className="h-full"
+          touchRatio={1.5}
+          threshold={10}
+          resistanceRatio={0.65}
         >
-          {SLIDES.map((slide, i) => (
-            <div
-              key={slide.network}
-              className="relative h-full w-full flex-none snap-center"
-            >
+          {SLIDES.map((slide) => (
+            <SwiperSlide key={slide.network} className="relative">
               <div className="absolute inset-0 bg-background">
                 <KairosVisualization
                   network={slide.network}
@@ -96,19 +85,19 @@ export default function GalleryPage() {
               <p className="absolute left-4 top-4 z-10 rounded-full bg-background/60 px-3 py-1 font-mono text-[10px] text-foreground-muted backdrop-blur-sm">
                 {slide.label}
               </p>
-            </div>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
 
         {/* Bottom gradient */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-gradient-to-t from-background to-transparent" />
 
         {/* Navigation dots */}
         <div className="absolute inset-x-0 bottom-6 z-20 flex items-center justify-center gap-2">
           {SLIDES.map((slide, i) => (
             <button
               key={slide.network}
-              onClick={() => scrollTo(i)}
+              onClick={() => swiperRef.current?.slideTo(i)}
               aria-label={slide.label}
               className={`h-2 rounded-full transition-all duration-300 ${
                 i === activeIndex
@@ -122,7 +111,7 @@ export default function GalleryPage() {
         {/* Arrow hints */}
         {activeIndex === 0 && (
           <button
-            onClick={() => scrollTo(1)}
+            onClick={() => swiperRef.current?.slideNext()}
             className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-background/40 p-2 text-foreground-muted backdrop-blur-sm transition-opacity hover:bg-background/60"
             aria-label="Next"
           >
@@ -133,7 +122,7 @@ export default function GalleryPage() {
         )}
         {activeIndex === 1 && (
           <button
-            onClick={() => scrollTo(0)}
+            onClick={() => swiperRef.current?.slidePrev()}
             className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-background/40 p-2 text-foreground-muted backdrop-blur-sm transition-opacity hover:bg-background/60"
             aria-label="Previous"
           >
