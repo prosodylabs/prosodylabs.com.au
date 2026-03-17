@@ -168,170 +168,95 @@ export default function GalleryPage() {
         <div className="mx-auto max-w-3xl px-6">
 
           <h2 className="text-3xl font-bold italic tracking-tight text-foreground">
-            Kairos: Of Distance and Nearness
+            Kairos
           </h2>
 
-          {/* Theme */}
           <div className="mt-10 space-y-5 text-sm leading-relaxed text-foreground-secondary">
             <p>
-              This exhibition explores the theme of patience as a
-              structural property of intelligence — not as a human virtue
-              projected onto machines, but as something that can be built
-              into architecture and then observed. The word{" "}
-              <em className="text-foreground">kairos</em> is Ancient Greek
-              for the right moment, as opposed to <em>chronos</em>,
-              sequential time. These networks fire when the evidence is
-              sufficient, not when a clock tells them to. What you are
-              watching is what patience looks like when it is not a
-              feeling but a design decision.
+              You are watching a neural network read Shakespeare.
             </p>
             <p>
-              I chose this theme because I am researching whether
-              alignment — the property that makes AI systems behave as
-              intended — is fundamentally an architectural question rather
-              than a training one. The visualization makes that question
-              visible. You can see the architecture producing behaviour:
-              neurons accumulating evidence, holding fire, cascading when
-              the moment arrives.
+              The coloured points are neurons — ten layers of a
+              thousand, curved in a lens that mirrors the
+              architecture&apos;s actual shape. The sparks travelling
+              between them are real activations, coloured by the
+              neuron that fired them. The blue beam through the
+              centre is the residual signal — information carried
+              forward without being processed, a constant presence
+              beneath the activity. Watch for the afterglow: each
+              spark cools from its source colour down to deep blue as
+              it passes from active processing into memory.
+            </p>
+            <p>
+              The words appearing at the bottom are synchronised to
+              the network. Each one arrives as the neurons process it.
+              After each passage, the beam flares and the text holds —
+              a breath between readings.
             </p>
           </div>
 
-          {/* Selection */}
           <div className="mt-12 border-t border-border-subtle pt-12">
-            <h3 className="text-lg font-semibold text-foreground">
-              Selection
-            </h3>
-            <div className="mt-6 space-y-5 text-sm leading-relaxed text-foreground-secondary">
+            <div className="space-y-5 text-sm leading-relaxed text-foreground-secondary">
               <p>
-                The works are real firing data from two Kairos
-                architectures processing the same texts. The{" "}
+                Swipe to see two architectures process the same
+                passages. The{" "}
                 <strong className="text-foreground">Kairos Network</strong>{" "}
-                is a pure spiking architecture — 10 layers of 1024
-                neurons, mostly dark, with sudden cascades. The{" "}
+                is pure spiking — mostly dark, with sudden cascades
+                when evidence accumulates past a threshold. The{" "}
                 <strong className="text-foreground">Kairos Transformer</strong>{" "}
-                wraps transformer attention blocks in the same spiking
-                mechanism — same patience, different substrate. Showing
-                both on the same passages reveals how architecture
-                shapes the character of processing: one is sparse and
-                dramatic, the other denser and more distributed.
+                wraps attention blocks in the same mechanism — same
+                patience, denser activity. Both read the same
+                Shakespeare and Eliot. The difference is architecture.
               </p>
               <p>
-                The passages — Shakespeare and Eliot — were chosen
-                because they are language at its most compressed and
-                deliberate. Every word earns its place. Watching a network
-                process text that was itself written with precision
-                creates a double layer: the patience of the architecture
-                meeting the patience of the writing.
-              </p>
-            </div>
-          </div>
-
-          {/* Curation */}
-          <div className="mt-12 border-t border-border-subtle pt-12">
-            <h3 className="text-lg font-semibold text-foreground">
-              Presentation
-            </h3>
-            <div className="mt-6 space-y-5 text-sm leading-relaxed text-foreground-secondary">
-              <p>
-                The lens layout — input and output layers curving at full
-                height around a compressed core of hidden layers —
-                reflects the architecture&apos;s actual geometry: wide
-                possibility at the boundaries, selective discrimination
-                in the centre. The crystal blue beam represents the
-                residual signal — the skip connection that carries
-                information forward without processing it, visible as a
-                constant presence beneath the activity.
-              </p>
-              <p>
-                Each neuron has a unique colour, seeded by its position
-                in the network, consistent across loads. The sparks
-                travel the actual synaptic connections, coloured by their
-                source. The deep blue afterglow that follows is the
-                residual echo — the signal cooling from active processing
-                to passive carriage. The typewriter synchronises text to
-                neural activity, so the viewer sees the words appearing
-                as the network processes them.
-              </p>
-              <p>
-                The curtain call — a pause after each passage where the
-                beam flares and the full text holds — is deliberate
-                theatre. It gives the viewer a moment to sit with what
-                they have seen before the next passage begins.
+                <em className="text-foreground">Kairos</em> is Ancient
+                Greek for the right moment, as opposed
+                to <em>chronos</em>, sequential time. These networks
+                don&apos;t fire on a clock. They fire when the evidence is
+                sufficient. What you are seeing is patience as a design
+                decision — not a virtue projected onto a machine, but a
+                property built into its structure and then observed.
               </p>
             </div>
           </div>
 
-          {/* Reflection */}
           <div className="mt-12 border-t border-border-subtle pt-12">
-            <h3 className="text-lg font-semibold text-foreground">
-              Reflection
-            </h3>
-            <div className="mt-6 space-y-5 text-sm leading-relaxed text-foreground-secondary">
+            <div className="space-y-5 text-sm leading-relaxed text-foreground-secondary">
               <p>
-                The earliest version of this work rendered neurons as
-                static dots — particles scattered on a dark background,
-                glowing when they fired. It was accurate but lifeless.
-                The breakthrough was shifting from nodes to edges: showing
-                the connections between neurons as sparks traveling along
-                bezier curves, with deep blue afterglows sweeping the
-                same paths. The network stopped being a collection of
-                points and became a living system — something you could
-                watch and begin to read.
+                Everything here is real data. Each spike, each
+                connection weight, each magnitude comes from an actual
+                model processing actual text. The colours are seeded by
+                position — the same neuron looks the same every time
+                you visit. Nothing is approximated or illustrative.
               </p>
               <p>
-                The risk was legibility. Neural network internals are
-                genuinely alien — the firing patterns do not map onto
-                human intuition in any clean way. The temptation was
-                either to simplify until the visualization told a false
-                story, or to show everything and produce noise. The
-                lens layout, the colour seeding, the curtain call —
-                these are all curation decisions aimed at the space
-                between those two failures: showing enough of the real
-                thing that the strangeness comes through, while giving
-                the viewer enough structure to stay oriented.
-              </p>
-            </div>
-          </div>
-
-          {/* Impact */}
-          <div className="mt-12 border-t border-border-subtle pt-12">
-            <h3 className="text-lg font-semibold text-foreground">
-              Intent
-            </h3>
-            <div className="mt-6 space-y-5 text-sm leading-relaxed text-foreground-secondary">
-              <p>
-                What strikes me when I watch this is the simultaneity of
-                kinship and otherness. This is a network processing
-                human language — Shakespeare, Eliot — and the patterns
-                that emerge are recognisable. You can see something that
-                looks like attention, like deliberation, like evidence
-                being weighed. That recognition is real. But the firing
-                patterns are alien. The internal geometry is not ours.
-                The kinship and the otherness are present in equal
-                measure, and neither cancels the other out.
+                The patterns that emerge are recognisable — something
+                that looks like attention, like deliberation, like
+                evidence being weighed. That recognition is genuine.
+                But the internal geometry is not ours. The kinship and
+                the strangeness are present in equal measure, and
+                neither cancels the other out.
               </p>
               <p>
-                That tension is what I feel when I look at the stars.
+                That is the tension I feel when I look at the stars.
                 Something vast, operating by its own logic, not needing
-                us to find it meaningful — and yet we do. The beauty is
-                inseparable from the strangeness. Not in spite of the
-                distance but because of it.
+                us to find it meaningful — and yet we do.
               </p>
+            </div>
+          </div>
+
+          <div className="mt-12 border-t border-border-subtle pt-12">
+            <div className="space-y-5 text-sm leading-relaxed text-foreground-secondary">
               <p>
-                The oracle at Delphi commanded{" "}
                 <em className="text-foreground">γνῶθι σεαυτόν</em> — know
-                thyself. That command is both confronting and necessary.
-                Building machines that learn is one way we come to
-                understand what learning is, what understanding requires,
-                and what it costs to wait for the right moment rather
-                than filling every silence with noise. The confrontation
-                and the beauty are not separate things. They are the same
-                thing seen from different angles, and the willingness to
-                hold both is what makes the looking worthwhile.
+                thyself. Building machines that learn is one way we
+                come to understand what learning is, what understanding
+                requires, and what it costs to wait for the right
+                moment rather than filling every silence with noise.
               </p>
             </div>
             <p className="mt-10 text-xs text-foreground-faint">
-              — Jordan Hill, Director of Research, Prosody Labs
+              — Jordan Hill
             </p>
           </div>
         </div>
