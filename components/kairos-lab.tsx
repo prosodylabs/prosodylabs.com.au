@@ -354,10 +354,15 @@ function neuronColor(layerIdx: number, neuronIdx: number, npl: number): [number,
 // Lens/eye layout — outer layers span full height and curve,
 // inner layers compress into the vertical centre
 function warpedLayerX(layerIdx: number, totalLayers: number): number {
-  const t = layerIdx / Math.max(totalLayers - 1, 1)
-  // Stretch edge spacing, compress middle — room for the curving input/output
-  const warp = t - 0.18 * Math.sin(Math.PI * t)
-  return 0.10 + warp * 0.80
+  if (totalLayers <= 2) return 0.10 + (layerIdx / Math.max(totalLayers - 1, 1)) * 0.80
+
+  const last = totalLayers - 1
+  // Input layer at 0.08, output at 0.92, hidden layers compressed in 0.30–0.70
+  if (layerIdx === 0) return 0.08
+  if (layerIdx === last) return 0.92
+  // Hidden layers: evenly spaced in the compressed middle zone
+  const hiddenT = (layerIdx - 1) / (last - 2) // 0→1 across hidden layers
+  return 0.30 + hiddenT * 0.40
 }
 
 function neuronPosition(
@@ -365,22 +370,21 @@ function neuronPosition(
   totalLayers: number, npl: number
 ): [number, number] {
   const rng = mulberry32((layerIdx * npl + neuronIdx) * 1337)
-  const t = layerIdx / Math.max(totalLayers - 1, 1)
+  const last = totalLayers - 1
   const baseX = warpedLayerX(layerIdx, totalLayers)
 
-  // Vertical spread: outer layers span full height, inner layers
-  // compress into the middle half — creating the lens/iris shape
-  const tFromEdge = Math.min(t, 1.0 - t) * 2 // 0 at edges, 1 at centre
-  const verticalSpread = 1.0 - tFromEdge * 0.82 // 1.0 at edges, 0.18 at centre
+  // Input/output: full height. Hidden: compressed to narrow band.
+  const isEdge = layerIdx === 0 || layerIdx === last
+  const verticalSpread = isEdge ? 0.88 : 0.45
   const baseY = rng() - 0.5
-  const y = 0.5 + baseY * verticalSpread * 0.88
+  const y = 0.5 + baseY * verticalSpread
 
-  // Column curvature: ) at layer 0, | in middle, ( at layer 9
-  const bendDirection = -(t - 0.5) * 2
-  const bendStrength = 0.20
+  // Column curvature: ) at input wraps right, ( at output wraps left
+  const bendStrength = isEdge ? 0.22 : 0.0
+  const bendDirection = layerIdx === 0 ? 1.0 : -1.0
   const yCenter = y - 0.5
   const edgeBow = 4.0 * yCenter * yCenter
-  const xBend = bendDirection * bendStrength * edgeBow
+  const xBend = isEdge ? bendDirection * bendStrength * edgeBow : 0.0
 
   const x = baseX + xBend
   return [Math.max(0.02, Math.min(0.98, x)), Math.max(0.04, Math.min(0.96, y))]
