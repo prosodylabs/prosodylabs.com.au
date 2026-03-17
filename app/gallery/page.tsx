@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import dynamic from "next/dynamic"
-import type { Metadata } from "next"
 
 const KairosVisualization = dynamic(
   () => import("@/components/kairos-visualization"),
@@ -237,7 +236,6 @@ export default function GalleryPage() {
                 worthwhile.
               </p>
             </div>
-          </div>
           </div>
         </div>
       </section>
