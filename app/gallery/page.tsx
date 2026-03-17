@@ -153,13 +153,18 @@ export default function GalleryPage() {
               processing core like a dish antenna.
             </p>
             <p>
-              Two architectures process the same Shakespeare. The{" "}
+              Both architectures are Kairos — spiking networks that
+              learn patience. The{" "}
               <strong className="text-foreground">spiking network</strong>{" "}
-              (10 layers, 1024 neurons) fires selectively — mostly dark,
-              with sudden cascades of evidence. The{" "}
-              <strong className="text-foreground">transformer</strong>{" "}
-              (6 layers, 384 dimensions) activates more uniformly,
-              attending to everything at once.
+              (10 layers, 1024 neurons) is a pure spiking architecture:
+              every layer fires selectively, mostly dark, with sudden
+              cascades of evidence. The{" "}
+              <strong className="text-foreground">patience transformer</strong>{" "}
+              (6 blocks, 384 dimensions) wraps transformer attention in
+              Kairos spiking layers — what you see are the spiking neurons
+              interpreting the transformer blocks&apos; representations,
+              deciding when the evidence is sufficient to fire. Same
+              patience mechanism, different substrate.
             </p>
             <p>
               The word <em>kairos</em> is Ancient Greek for the right
