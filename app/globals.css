@@ -82,6 +82,15 @@ html {
   color: hsl(100 8% 98%);
 }
 
+/* Highlight.js overrides — match Yarn dark theme */
+.hljs {
+  background: hsl(120 4% 7%) !important;
+}
+pre:has(.hljs) {
+  background: hsl(120 4% 10%) !important;
+  border: 1px solid hsl(120 4% 15%);
+}
+
 /* Hide scrollbar for carousel */
 .scrollbar-none {
   -ms-overflow-style: none;

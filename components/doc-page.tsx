@@ -1,6 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import hljs from "highlight.js/lib/core"
+import python from "highlight.js/lib/languages/python"
+import bash from "highlight.js/lib/languages/bash"
+import json from "highlight.js/lib/languages/json"
+import plaintext from "highlight.js/lib/languages/plaintext"
+import "highlight.js/styles/github-dark.min.css"
+
+hljs.registerLanguage("python", python)
+hljs.registerLanguage("bash", bash)
+hljs.registerLanguage("shell", bash)
+hljs.registerLanguage("json", json)
+hljs.registerLanguage("plaintext", plaintext)
+hljs.registerLanguage("text", plaintext)
 
 interface DocPageProps {
   slug: string
@@ -9,6 +22,7 @@ interface DocPageProps {
 
 export function DocPage({ slug, title }: DocPageProps) {
   const [html, setHtml] = useState("")
+  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch(`/docs/${slug}.md`)
@@ -18,30 +32,39 @@ export function DocPage({ slug, title }: DocPageProps) {
         const lines = md.split("\n")
         const out: string[] = []
         let inCode = false
+        let codeLines: string[] = []
+        let codeLang = ""
         let inList = false
 
         for (const line of lines) {
           if (line.startsWith("```")) {
             if (inCode) {
-              out.push("</code></pre>")
-              inCode = false
-            } else {
-              const lang = line.slice(3).trim()
+              // End code block — highlight
+              const code = codeLines.join("\n")
+              const lang = codeLang || "plaintext"
+              let highlighted: string
+              try {
+                highlighted = hljs.highlight(code, { language: lang }).value
+              } catch {
+                highlighted = code
+                  .replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+              }
               out.push(
-                `<pre class="overflow-x-auto rounded-xl bg-background p-4 text-sm my-4"><code class="text-foreground-secondary">`
+                `<pre class="overflow-x-auto rounded-xl bg-background p-4 text-sm my-4 !bg-[hsl(120,4%,7%)]"><code class="hljs language-${lang}">${highlighted}</code></pre>`
               )
+              inCode = false
+              codeLines = []
+              codeLang = ""
+            } else {
+              codeLang = line.slice(3).trim()
               inCode = true
             }
             continue
           }
           if (inCode) {
-            out.push(
-              line
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-            )
-            out.push("\n")
+            codeLines.push(line)
             continue
           }
 
@@ -118,6 +141,7 @@ export function DocPage({ slug, title }: DocPageProps) {
             </a>
           </div>
           <div
+            ref={contentRef}
             className="mt-8"
             dangerouslySetInnerHTML={{ __html: html }}
           />
