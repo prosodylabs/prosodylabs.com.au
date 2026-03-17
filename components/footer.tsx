@@ -96,8 +96,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-border-subtle pt-8">
           <p className="text-xs text-foreground-faint">
-            &copy; {new Date().getFullYear()} Prosody Labs Pty Ltd. ABN
-            48&nbsp;686&nbsp;529&nbsp;102. Perth, Western Australia.
+            {"\u00a9"} 2026 Prosody Labs Pty Ltd. ABN 48{"\u00a0"}686{"\u00a0"}529{"\u00a0"}102. Perth, Western Australia.
           </p>
         </div>
       </div>
