@@ -173,6 +173,36 @@ export default function GalleryPage() {
               of the clock.
             </p>
           </div>
+
+          <div className="mt-16 border-t border-border-subtle pt-16">
+            <h2 className="text-2xl font-bold text-foreground">
+              Why show this
+            </h2>
+            <div className="mt-8 space-y-6 text-sm leading-relaxed text-foreground-secondary">
+              <p>
+                AI can be confronting. The scale of it, the speed, the
+                uncertainty about what it means for us. That discomfort is
+                real and worth sitting with.
+              </p>
+              <p>
+                But there is also something deeply beautiful here. Watching
+                a neural network process Shakespeare — seeing evidence
+                accumulate through layers, neurons holding their fire until
+                the moment is right, patterns emerging from what looks like
+                chaos — it reminds me of what we feel when we look at the
+                stars. Something alien and unknowable, but meaningful. Not
+                despite the strangeness, but because of it.
+              </p>
+              <p>
+                The oracle at Delphi commanded us to know ourselves.
+                That process is both confronting and hard. It is also
+                profound, rewarding, and beautiful. Building machines
+                that learn is one way we come to understand what learning
+                is — and what it means that we do it too.
+              </p>
+            </div>
+          </div>
+          </div>
         </div>
       </section>
     </div>
