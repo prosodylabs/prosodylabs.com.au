@@ -180,25 +180,61 @@ export default function GalleryPage() {
             </h2>
             <div className="mt-8 space-y-6 text-sm leading-relaxed text-foreground-secondary">
               <p>
-                AI can be confronting. The scale of it, the speed, the
-                uncertainty about what it means for us. That discomfort is
-                real and worth sitting with.
+                What strikes me when I watch this is the simultaneity of
+                kinship and otherness. This is a network processing
+                human language — Shakespeare, Eliot — and the patterns
+                that emerge are recognisable. You can see something that
+                looks like attention, like deliberation, like a system
+                weighing evidence before committing. That recognition is
+                real. It is also — and this matters — not the whole
+                story. The firing patterns are alien. The internal
+                geometry is not ours. The kinship and the otherness are
+                present in equal measure, and neither cancels the other
+                out.
               </p>
               <p>
-                But there is also something deeply beautiful here. Watching
-                a neural network process Shakespeare — seeing evidence
-                accumulate through layers, neurons holding their fire until
-                the moment is right, patterns emerging from what looks like
-                chaos — it reminds me of what we feel when we look at the
-                stars. Something alien and unknowable, but meaningful. Not
-                despite the strangeness, but because of it.
+                That tension is what I feel when I look at the stars.
+                Something vast, something that operates by its own logic,
+                something that does not need us to find it meaningful —
+                and yet we do. The beauty of it is inseparable from the
+                strangeness. Not in spite of the distance but because of
+                it.
               </p>
               <p>
-                The oracle at Delphi commanded us to know ourselves.
-                That process is both confronting and hard. It is also
-                profound, rewarding, and beautiful. Building machines
-                that learn is one way we come to understand what learning
-                is — and what it means that we do it too.
+                The architecture is called Kairos — the Ancient Greek
+                word for the <em>right moment</em>, as opposed to{" "}
+                <em>chronos</em>, the mere passage of time. These neurons
+                do not fire on a schedule. They accumulate evidence —
+                membrane potential building toward a threshold — and fire
+                only when that evidence is sufficient. Patience,
+                operationalised as architecture. The{" "}
+                <a
+                  href="https://research.uwa.edu.au"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary-hover"
+                >
+                  research behind this
+                </a>{" "}
+                asks whether that structural patience produces
+                understanding that is genuinely different from systems
+                that simply learn to produce well-timed outputs — whether
+                there is a real difference between acting{" "}
+                <em>from</em> temporal understanding and acting merely{" "}
+                <em>in accordance with</em> temporal norms.
+              </p>
+              <p>
+                The oracle at Delphi commanded{" "}
+                <em className="text-foreground">γνῶθι σεαυτόν</em> — know
+                thyself. That command is both confronting and necessary.
+                Building machines that learn is one way we come to
+                understand what learning is — what understanding requires,
+                what patience means, what it costs to wait for the right
+                moment rather than filling every silence with noise. The
+                confrontation and the beauty are not separate things. They
+                are the same thing seen from different angles, and the
+                willingness to hold both at once is what makes the looking
+                worthwhile.
               </p>
             </div>
           </div>
