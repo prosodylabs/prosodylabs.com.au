@@ -250,7 +250,6 @@ precision highp float;
 
 uniform float u_residuals[10];
 uniform float u_layerX[10];
-uniform int u_numLayers;
 uniform float u_time;
 
 in vec2 v_uv;
@@ -274,16 +273,14 @@ void main() {
     float avgRes = 0.0;
     float maxRes = 0.0;
     for (int i = 0; i < 10; i++) {
-        if (i >= u_numLayers) break;
         avgRes += u_residuals[i];
         maxRes = max(maxRes, u_residuals[i]);
     }
-    avgRes /= float(u_numLayers);
+    avgRes /= 10.0;
 
     // Per-layer residual at this x position — sharp modulation per column
     float localRes = 0.0;
     for (int i = 0; i < 10; i++) {
-        if (i >= u_numLayers) break;
         float dist = abs(v_uv.x - u_layerX[i]);
         // Tight influence — beam visibly brightens/dims at each layer
         localRes = max(localRes, exp(-dist * dist / 0.004) * u_residuals[i]);
@@ -416,6 +413,16 @@ function compileShader(gl: WebGL2RenderingContext, type: number, src: string): W
   return s
 }
 
+// Safe attribute binding — skips if attribute was optimized out
+function bindAttr(gl: WebGL2RenderingContext, prog: WebGLProgram, name: string,
+  size: number, stride: number, offset: number) {
+  const loc = gl.getAttribLocation(prog, name)
+  if (loc >= 0) {
+    gl.enableVertexAttribArray(loc)
+    gl.vertexAttribPointer(loc, size, gl.FLOAT, false, stride, offset)
+  }
+}
+
 function linkProgram(gl: WebGL2RenderingContext, vs: string, fs: string): WebGLProgram | null {
   const v = compileShader(gl, gl.VERTEX_SHADER, vs)
   const f = compileShader(gl, gl.FRAGMENT_SHADER, fs)
@@ -446,10 +453,11 @@ const MAX_EDGES = 5000
 // ─── Component ────────────────────────────────────────────
 
 interface KairosLabProps {
+  network?: "spiking" | "transformer"
   onSampleLoaded?: (name: string, text: string, timesteps: number, totalDuration: number, tps: number) => void
 }
 
-export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
+export default function KairosLab({ network = "spiking", onSampleLoaded }: KairosLabProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animRef = useRef<number>(0)
   const [loaded, setLoaded] = useState(false)
@@ -462,10 +470,17 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
     let cleanup: (() => void) | undefined
 
     async function init() {
-      // Stream JSONL — parallel fetch of meta + random sample
+      // Stream JSONL — with Safari fallback
       async function streamJsonl(url: string): Promise<Record<string, any>[]> {
         const res = await fetch(url)
-        const reader = res.body!.getReader()
+
+        // Safari fallback: if ReadableStream not available, parse as text
+        if (!res.body || !res.body.getReader) {
+          const text = await res.text()
+          return text.split('\n').filter(l => l.trim()).map(l => JSON.parse(l))
+        }
+
+        const reader = res.body.getReader()
         const decoder = new TextDecoder()
         const lines: Record<string, any>[] = []
         let buf = ''
@@ -485,8 +500,8 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
 
       const sampleIdx = Math.floor(Math.random() * 6)
       const [metaLines, sampleLines] = await Promise.all([
-        streamJsonl("/kairos/meta.jsonl"),
-        streamJsonl(`/kairos/sample_${sampleIdx}.jsonl`),
+        streamJsonl(`/kairos/${network}_meta.jsonl`),
+        streamJsonl(`/kairos/${network}_sample_${sampleIdx}.jsonl`),
       ])
       if (disposed) return
 
@@ -598,7 +613,7 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       }
 
       let maxFanIn = 1
-      for (const v of fanInMap.values()) if (v > maxFanIn) maxFanIn = v
+      fanInMap.forEach((v) => { if (v > maxFanIn) maxFanIn = v })
 
       // ── Dot data (spikes with fan-in) ──
       const dotFloats = 8
@@ -714,7 +729,12 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       const gl = canvas!.getContext("webgl2", {
         alpha: true, premultipliedAlpha: false, antialias: false,
       })
-      if (!gl || disposed) return
+      if (!gl) {
+        console.warn("WebGL2 not available")
+        setLoaded(true) // show page without visualization
+        return
+      }
+      if (disposed) return
 
       // Edge program
       const eProg = linkProgram(gl, EDGE_VERT, EDGE_FRAG)!
@@ -725,16 +745,11 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       const eVao = gl.createVertexArray()!
       gl.bindVertexArray(eVao)
       const eStr = evf * 4
-      gl.enableVertexAttribArray(gl.getAttribLocation(eProg, "a_position"))
-      gl.vertexAttribPointer(gl.getAttribLocation(eProg, "a_position"), 2, gl.FLOAT, false, eStr, 0)
-      gl.enableVertexAttribArray(gl.getAttribLocation(eProg, "a_color"))
-      gl.vertexAttribPointer(gl.getAttribLocation(eProg, "a_color"), 3, gl.FLOAT, false, eStr, 8)
-      gl.enableVertexAttribArray(gl.getAttribLocation(eProg, "a_magnitude"))
-      gl.vertexAttribPointer(gl.getAttribLocation(eProg, "a_magnitude"), 1, gl.FLOAT, false, eStr, 20)
-      gl.enableVertexAttribArray(gl.getAttribLocation(eProg, "a_time"))
-      gl.vertexAttribPointer(gl.getAttribLocation(eProg, "a_time"), 1, gl.FLOAT, false, eStr, 24)
-      gl.enableVertexAttribArray(gl.getAttribLocation(eProg, "a_progress"))
-      gl.vertexAttribPointer(gl.getAttribLocation(eProg, "a_progress"), 1, gl.FLOAT, false, eStr, 28)
+      bindAttr(gl, eProg, "a_position", 2, eStr, 0)
+      bindAttr(gl, eProg, "a_color", 3, eStr, 8)
+      bindAttr(gl, eProg, "a_magnitude", 1, eStr, 20)
+      bindAttr(gl, eProg, "a_time", 1, eStr, 24)
+      bindAttr(gl, eProg, "a_progress", 1, eStr, 28)
       gl.bindVertexArray(null)
 
       const euTime = gl.getUniformLocation(eProg, "u_currentTime")!
@@ -750,16 +765,11 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       const dVao = gl.createVertexArray()!
       gl.bindVertexArray(dVao)
       const dStr = dotFloats * 4
-      gl.enableVertexAttribArray(gl.getAttribLocation(dProg, "a_position"))
-      gl.vertexAttribPointer(gl.getAttribLocation(dProg, "a_position"), 2, gl.FLOAT, false, dStr, 0)
-      gl.enableVertexAttribArray(gl.getAttribLocation(dProg, "a_color"))
-      gl.vertexAttribPointer(gl.getAttribLocation(dProg, "a_color"), 3, gl.FLOAT, false, dStr, 8)
-      gl.enableVertexAttribArray(gl.getAttribLocation(dProg, "a_magnitude"))
-      gl.vertexAttribPointer(gl.getAttribLocation(dProg, "a_magnitude"), 1, gl.FLOAT, false, dStr, 20)
-      gl.enableVertexAttribArray(gl.getAttribLocation(dProg, "a_time"))
-      gl.vertexAttribPointer(gl.getAttribLocation(dProg, "a_time"), 1, gl.FLOAT, false, dStr, 24)
-      gl.enableVertexAttribArray(gl.getAttribLocation(dProg, "a_fanIn"))
-      gl.vertexAttribPointer(gl.getAttribLocation(dProg, "a_fanIn"), 1, gl.FLOAT, false, dStr, 28)
+      bindAttr(gl, dProg, "a_position", 2, dStr, 0)
+      bindAttr(gl, dProg, "a_color", 3, dStr, 8)
+      bindAttr(gl, dProg, "a_magnitude", 1, dStr, 20)
+      bindAttr(gl, dProg, "a_time", 1, dStr, 24)
+      bindAttr(gl, dProg, "a_fanIn", 1, dStr, 28)
       gl.bindVertexArray(null)
 
       const duTime = gl.getUniformLocation(dProg, "u_currentTime")!
@@ -775,14 +785,10 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
       const mVao = gl.createVertexArray()!
       gl.bindVertexArray(mVao)
       const mStr = memFloats * 4
-      gl.enableVertexAttribArray(gl.getAttribLocation(mProg, "a_position"))
-      gl.vertexAttribPointer(gl.getAttribLocation(mProg, "a_position"), 2, gl.FLOAT, false, mStr, 0)
-      gl.enableVertexAttribArray(gl.getAttribLocation(mProg, "a_color"))
-      gl.vertexAttribPointer(gl.getAttribLocation(mProg, "a_color"), 3, gl.FLOAT, false, mStr, 8)
-      gl.enableVertexAttribArray(gl.getAttribLocation(mProg, "a_magnitude"))
-      gl.vertexAttribPointer(gl.getAttribLocation(mProg, "a_magnitude"), 1, gl.FLOAT, false, mStr, 20)
-      gl.enableVertexAttribArray(gl.getAttribLocation(mProg, "a_time"))
-      gl.vertexAttribPointer(gl.getAttribLocation(mProg, "a_time"), 1, gl.FLOAT, false, mStr, 24)
+      bindAttr(gl, mProg, "a_position", 2, mStr, 0)
+      bindAttr(gl, mProg, "a_color", 3, mStr, 8)
+      bindAttr(gl, mProg, "a_magnitude", 1, mStr, 20)
+      bindAttr(gl, mProg, "a_time", 1, mStr, 24)
       gl.bindVertexArray(null)
 
       const muTime = gl.getUniformLocation(mProg, "u_currentTime")!
@@ -796,14 +802,13 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
 
       const rVao = gl.createVertexArray()!
       gl.bindVertexArray(rVao)
-      gl.enableVertexAttribArray(gl.getAttribLocation(rProg, "a_position"))
-      gl.vertexAttribPointer(gl.getAttribLocation(rProg, "a_position"), 2, gl.FLOAT, false, 0, 0)
+      bindAttr(gl, rProg, "a_position", 2, 0, 0)
       gl.bindVertexArray(null)
 
       // Set static uniforms
       gl.useProgram(rProg)
       gl.uniform1fv(gl.getUniformLocation(rProg, "u_layerX[0]"), layerXPositions)
-      gl.uniform1i(gl.getUniformLocation(rProg, "u_numLayers"), nLayers)
+      // u_numLayers removed — hardcoded to 10 in shader for Safari compat
       const ruResiduals = gl.getUniformLocation(rProg, "u_residuals[0]")!
       const ruTime = gl.getUniformLocation(rProg, "u_time")!
 
@@ -895,7 +900,7 @@ export default function KairosLab({ onSampleLoaded }: KairosLabProps) {
 
     init()
     return () => { disposed = true; cancelAnimationFrame(animRef.current); cleanup?.() }
-  }, [])
+  }, [network])
 
   return (
     <canvas

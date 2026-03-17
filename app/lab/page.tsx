@@ -8,6 +8,7 @@ const KairosLab = dynamic(() => import("@/components/kairos-lab"), {
 })
 
 export default function LabPage() {
+  const [network, setNetwork] = useState<"spiking" | "transformer">("spiking")
   const [passageText, setPassageText] = useState("")
   const [displayedChars, setDisplayedChars] = useState(0)
   const [passageName, setPassageName] = useState("")
@@ -52,27 +53,44 @@ export default function LabPage() {
     <div className="pt-14">
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-background">
-          <KairosLab onSampleLoaded={handleSampleLoaded} />
+          <KairosLab network={network} onSampleLoaded={handleSampleLoaded} />
         </div>
 
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(120_4%_7%/0.3)_0%,transparent_60%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-          <p className="mb-4 font-mono text-xs text-foreground-muted">
-            /lab — experimental visualization
-          </p>
+          {/* Network toggle */}
+          <div className="mb-6 inline-flex items-center rounded-full border border-border-subtle bg-background/60 p-1 backdrop-blur-sm">
+            <button
+              onClick={() => setNetwork("spiking")}
+              className={`rounded-full px-4 py-1.5 font-mono text-xs transition-all ${
+                network === "spiking"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground-muted hover:text-foreground"
+              }`}
+            >
+              Spiking
+            </button>
+            <button
+              onClick={() => setNetwork("transformer")}
+              className={`rounded-full px-4 py-1.5 font-mono text-xs transition-all ${
+                network === "transformer"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground-muted hover:text-foreground"
+              }`}
+            >
+              Transformer
+            </button>
+          </div>
+
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             AI infrastructure
             <br />
             <span className="text-primary">for Australian research</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary">
-            Kairos visualization lab. Compare with{" "}
-            <a href="/" className="text-primary underline">
-              the original
-            </a>
-            .
+            Same text, different architecture. Watch how each network processes Shakespeare.
           </p>
         </div>
 

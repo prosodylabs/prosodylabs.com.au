@@ -153,7 +153,10 @@ export default function PricingPage() {
                     VRAM
                   </th>
                   <th className="px-6 py-4 text-right font-medium text-foreground">
-                    Rate
+                    Sovereign
+                  </th>
+                  <th className="px-6 py-4 text-right font-medium text-foreground">
+                    Overseas
                   </th>
                 </tr>
               </thead>
@@ -170,7 +173,10 @@ export default function PricingPage() {
                       {gpu.vram}
                     </td>
                     <td className="px-6 py-4 text-right text-foreground">
-                      {gpu.rate}
+                      {gpu.sovereign}
+                    </td>
+                    <td className="px-6 py-4 text-right text-foreground-muted">
+                      {gpu.overseas}
                     </td>
                   </tr>
                 ))}
