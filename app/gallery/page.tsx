@@ -148,7 +148,7 @@ export default function GalleryPage() {
         <div className="mx-auto max-w-3xl px-6">
 
           <h2 className="text-3xl font-bold italic tracking-tight text-foreground">
-            Kairos: A Study of Time
+            Kairos: Of Distance and Nearness
           </h2>
 
           {/* Theme */}
