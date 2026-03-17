@@ -147,8 +147,8 @@ export default function GalleryPage() {
       <section className="py-24">
         <div className="mx-auto max-w-3xl px-6">
 
-          <h2 className="text-2xl font-bold text-foreground">
-            Curatorial rationale
+          <h2 className="text-3xl font-bold italic tracking-tight text-foreground">
+            Kairos: A Study of Time
           </h2>
 
           {/* Theme */}
