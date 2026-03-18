@@ -67,28 +67,27 @@ yarn.models.register(
   {
     label: "BYO GPU",
     lang: "bash",
-    code: `# On any machine with a GPU:
-$ pip install yarn-au
-$ yarn join my-university --token <invite-token>
+    code: `# On a machine with an NVIDIA GPU (requires sudo):
+$ curl -fsSL https://get.yarn.prosodylabs.com.au/worker \\
+    | sudo bash -s -- --token <join-token>
 
-# That's it. Your GPU is now part of the network.
-# Share it with your team, your lab, your institution.
-# Yarn handles scheduling, isolation, and billing.
+# Installs Tailscale mesh, detects GPU, registers with Yarn.
+# Your GPU is now part of the network — scheduling,
+# isolation, and billing handled automatically.
 
-$ yarn status
-  RTX 4090 (24GB) — online, 2 jobs queued
-  Cost: BYO (free)`,
+# Preview what it would do:
+$ curl ... | sudo bash -s -- --token <token> --dry-run`,
   },
   {
-    label: "Install",
+    label: "Client",
     lang: "bash",
-    code: `$ pip install yarn-au
-
-# Authenticate
+    code: `# For researchers — no sudo, no GPU required:
+$ pip install yarn-au
 $ yarn login
 Authenticated as jordan@prosodylabs.com.au
 
-# Check your GPUs
+# Submit jobs, start sessions, query models
+# from your laptop. Yarn finds the GPU.
 $ yarn gpus
   rtx4090 (24GB) — BYO, online
   h100    (80GB) — managed, $2.50/hr`,
