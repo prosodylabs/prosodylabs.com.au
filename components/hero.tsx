@@ -54,7 +54,7 @@ export function Hero() {
 
       {/* Frosted glass pane behind text for readability */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        <div className="absolute -inset-x-8 -inset-y-6 rounded-3xl border border-border-subtle/30 bg-background/50 backdrop-blur-md" />
+        <div className="absolute -inset-x-8 -inset-y-6 rounded-3xl border border-border-subtle/20 bg-background/25 backdrop-blur-sm" />
         <div className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-sovereign/30 bg-sovereign-muted/50 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-sovereign animate-pulse" />
           <span className="text-xs font-medium text-sovereign">
