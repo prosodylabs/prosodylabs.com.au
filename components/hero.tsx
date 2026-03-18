@@ -52,9 +52,15 @@ export function Hero() {
 
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
-      {/* Frosted glass pane behind text for readability */}
+      {/* Gradient frost — clear edges, frosted centre */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        <div className="absolute -inset-x-8 -inset-y-6 rounded-3xl border border-border-subtle/20 bg-background/25 backdrop-blur-sm" />
+        <div className="absolute -inset-x-16 -inset-y-12 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse 70% 80% at 50% 50%, hsl(120 4% 7% / 0.35) 0%, hsl(120 4% 7% / 0.15) 50%, transparent 100%)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+          maskImage: 'radial-gradient(ellipse 70% 80% at 50% 50%, black 0%, black 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 70% 80% at 50% 50%, black 0%, black 40%, transparent 100%)',
+        }} />
         <div className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-sovereign/30 bg-sovereign-muted/50 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-sovereign animate-pulse" />
           <span className="text-xs font-medium text-sovereign">
