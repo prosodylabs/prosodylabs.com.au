@@ -11,76 +11,87 @@ hljs.registerLanguage("bash", bash)
 
 const TABS: { label: string; lang: string; code: string }[] = [
   {
-    label: "Install",
-    lang: "bash",
-    code: `$ curl -fsSL https://yarn.prosodylabs.com.au/install | sh
+    label: "Session",
+    lang: "python",
+    code: `import yarn
+import torch
 
-# Registers your machine, detects GPUs, joins the network
-# One command. No Kubernetes. No Docker. No config files.
+# Your code. Wrap it in a session and it runs on a GPU.
+with yarn.session(gpu="rtx4090") as device:
+    model = MyModel().to(device)
+    optimizer = torch.optim.Adam(model.parameters())
 
-$ yarn login
-Authenticated as jordan@prosodylabs.com.au
-GPU detected: RTX 4090 (24GB) — registered as yarn-athena-01`,
+    for epoch in range(100):
+        loss = train_step(model, data, device)
+        device.log({"epoch": epoch, "loss": loss.item()})
+
+    device.save("model.pt", model.state_dict())
+# GPU released. Logs and checkpoints in your dashboard.`,
   },
   {
     label: "Training",
     lang: "python",
     code: `import yarn
 
-job = yarn.submit_job(
+# Submit and walk away. Yarn bundles your code,
+# picks a GPU, streams logs, saves checkpoints.
+job = yarn.submit(
     directory="./my-experiment",
-    gpu="rtx4090"           # or "auto" for pay-as-you-go
+    gpu="rtx4090",              # or "auto"
 )
 
-job.wait()
-print(job.result)
-print(job.metrics)          # loss, GPU hours, cost`,
-  },
-  {
-    label: "Session",
-    lang: "python",
-    code: `import yarn
+for line in job.stream_logs():
+    print(line)
 
-# Interactive GPU session — Jupyter, SSH, or Ray
-session = yarn.session(
-    gpu="rtx4090",
-    hours=4                 # auto-checkpoints on expiry
-)
-
-print(session.jupyter_url)  # https://s-abc123.research.prosodylabs.com.au
-print(session.ssh)          # ssh researcher@s-abc123.yarn`,
+print(job.result)               # metrics, cost, runtime`,
   },
   {
     label: "Inference",
     lang: "python",
     code: `import yarn
 
-# Register your own model or use a shared one
-yarn.models.register(
-    name="my-org/llama-3-70b",
-    source="huggingface",
-    compute="auto"          # Yarn picks the cheapest GPU
-)
-
-# OpenAI-compatible — drop-in replacement
+# OpenAI-compatible. Drop-in replacement.
 response = yarn.chat(
-    model="my-org/llama-3-70b",
+    model="mistralai/Mistral-7B-Instruct-v0.2",
     messages=[{"role": "user", "content": "Hello"}]
 )
-print(response.choices[0].message.content)`,
+print(response.choices[0].message.content)
+
+# Or bring your own model
+yarn.models.register(
+    name="my-org/fine-tuned-llama",
+    source="huggingface",
+    compute="auto"              # cheapest available GPU
+)`,
   },
   {
     label: "BYO GPU",
     lang: "bash",
     code: `# On any machine with a GPU:
-$ curl -fsSL https://yarn.prosodylabs.com.au/install | sh
+$ pip install yarn-au
+$ yarn join my-university --token <invite-token>
 
-# That's it. Your GPU is now part of the Yarn network.
-# Share it with your team, your lab, your whole institution.
+# That's it. Your GPU is now part of the network.
+# Share it with your team, your lab, your institution.
 # Yarn handles scheduling, isolation, and billing.
 
-# Or join an org:
-$ yarn join my-university --token <invite-token>`,
+$ yarn status
+  RTX 4090 (24GB) — online, 2 jobs queued
+  Cost: BYO (free)`,
+  },
+  {
+    label: "Install",
+    lang: "bash",
+    code: `$ pip install yarn-au
+
+# Authenticate
+$ yarn login
+Authenticated as jordan@prosodylabs.com.au
+
+# Check your GPUs
+$ yarn gpus
+  rtx4090 (24GB) — BYO, online
+  h100    (80GB) — managed, $2.50/hr`,
   },
 ]
 
