@@ -35,10 +35,10 @@ export function Header() {
             </Link>
           ))}
           <a
-            href="https://account.yarn.prosodylabs.com.au"
+            href="https://account.yarn.prosodylabs.com.au/signup"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
           >
-            Get started
+            Request access
           </a>
         </nav>
 
@@ -88,10 +88,10 @@ export function Header() {
               </Link>
             ))}
             <a
-              href="https://account.yarn.prosodylabs.com.au"
+              href="https://account.yarn.prosodylabs.com.au/signup"
               className="mt-2 rounded-lg bg-primary px-4 py-3 text-center text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
             >
-              Get started
+              Request access
             </a>
           </div>
         </nav>

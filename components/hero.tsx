@@ -56,9 +56,9 @@ export function Hero() {
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <div className="absolute -inset-x-8 -inset-y-6 rounded-3xl border border-border-subtle/30 bg-background/50 backdrop-blur-md" />
         <div className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-sovereign/30 bg-sovereign-muted/50 px-4 py-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-sovereign" />
+          <span className="h-1.5 w-1.5 rounded-full bg-sovereign animate-pulse" />
           <span className="text-xs font-medium text-sovereign">
-            Built in Perth, Western Australia
+            Private beta — Perth, Western Australia
           </span>
         </div>
 
@@ -76,13 +76,13 @@ export function Hero() {
 
         <div className="relative mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
-            href="https://account.yarn.prosodylabs.com.au"
+            href="https://account.yarn.prosodylabs.com.au/signup"
             className="w-full rounded-xl bg-primary px-8 py-3.5 text-base font-medium text-primary-foreground transition-colors hover:bg-primary-hover sm:w-auto"
           >
-            Get started
+            Request access
           </a>
           <a
-            href="https://account.yarn.prosodylabs.com.au/docs"
+            href="/docs"
             className="w-full rounded-xl border border-border bg-background-surface/50 px-8 py-3.5 text-base font-medium text-foreground transition-colors hover:bg-background-hover sm:w-auto"
           >
             View docs

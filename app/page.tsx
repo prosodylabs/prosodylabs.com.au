@@ -58,8 +58,8 @@ const PRICING_TIERS = [
       "Australian data residency",
       "Overflow to shared pool when you need more",
     ],
-    cta: "Get started",
-    href: "https://account.yarn.prosodylabs.com.au",
+    cta: "Request access",
+    href: "https://account.yarn.prosodylabs.com.au/signup",
     highlight: false,
   },
   {
@@ -73,8 +73,8 @@ const PRICING_TIERS = [
       "Per-team and per-user spend controls",
       "No subscriptions, no lock-in",
     ],
-    cta: "Add balance",
-    href: "https://account.yarn.prosodylabs.com.au/dashboard/credits",
+    cta: "Request access",
+    href: "https://account.yarn.prosodylabs.com.au/signup",
     highlight: true,
   },
 ]
@@ -165,8 +165,7 @@ export default function HomePage() {
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-foreground-secondary">
               Start free with your own GPU. Pay only for what you use with
-              credit packs. Or talk to us about dedicated capacity for your
-              team.
+              credit packs. Private beta pricing — no contracts, no lock-in.
             </p>
           </div>
 
@@ -230,26 +229,26 @@ export default function HomePage() {
       <section className="border-t border-border-subtle bg-background-elevated py-24">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Start building on sovereign infrastructure
+            We&apos;re looking for research partners
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-foreground-secondary">
-            Create a free account, connect your GPU or buy credits, and deploy
-            your first model in minutes.
+            Yarn is in private beta. We&apos;re working with a small number of
+            research groups to test the platform before general availability.
+            If you&apos;re a researcher, lab, or institution interested in
+            sovereign GPU compute — we&apos;d love to hear from you.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="https://account.yarn.prosodylabs.com.au"
+              href="https://account.yarn.prosodylabs.com.au/signup"
               className="w-full rounded-xl bg-primary px-8 py-3.5 text-base font-medium text-primary-foreground transition-colors hover:bg-primary-hover sm:w-auto"
             >
-              Create free account
+              Request access
             </a>
             <a
-              href="https://github.com/prosodylabs/yarn"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs"
               className="w-full rounded-xl border border-border bg-background-surface/50 px-8 py-3.5 text-base font-medium text-foreground transition-colors hover:bg-background-hover sm:w-auto"
             >
-              View on GitHub
+              Read the docs
             </a>
           </div>
         </div>
