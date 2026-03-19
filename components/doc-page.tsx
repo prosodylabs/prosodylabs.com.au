@@ -84,19 +84,23 @@ export function DocPage({ slug, title }: DocPageProps) {
             if (!inList) {
               inList = true
             }
-            const content = line.slice(2).replace(/`([^`]+)`/g, '<code class="rounded bg-background px-1.5 py-0.5 text-xs text-foreground">$1</code>')
+            const content = line.slice(2)
+              .replace(/`([^`]+)`/g, '<code class="rounded bg-background px-1.5 py-0.5 text-xs text-foreground">$1</code>')
+              .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-medium text-foreground">$1</strong>')
             out.push(`<li class="ml-4 list-disc text-sm text-foreground-secondary mb-1">${content}</li>`)
-          } else if (line.startsWith("| ") && line.includes("|")) {
-            // Table rows
-            if (line.includes("---")) continue // separator
+          } else if (line.startsWith("|") && line.includes("|")) {
+            // Table rows — skip separator lines (e.g. |---|---|)
+            if (/^\|[\s-|]+\|$/.test(line.trim())) continue
             const cells = line.split("|").filter(c => c.trim()).map(c => c.trim())
-            const isHeader = out[out.length - 1]?.includes("<table") === false && !out.some(l => l.includes("<td"))
+            // Header = first row of a new table (previous line is not a table row)
+            const lastLine = out[out.length - 1] || ""
+            const isHeader = !lastLine.includes("</tr>")
             const tag = isHeader ? "th" : "td"
             const cellClass = isHeader
               ? "px-4 py-2 text-left text-xs font-medium text-foreground"
               : "px-4 py-2 text-xs text-foreground-secondary"
             const row = cells.map(c => `<${tag} class="${cellClass}">${c}</${tag}>`).join("")
-            if (!out.some(l => l.includes("<table"))) {
+            if (isHeader) {
               out.push('<table class="w-full my-4 border border-border-subtle rounded-xl overflow-hidden text-sm">')
             }
             out.push(`<tr class="border-b border-border-subtle">${row}</tr>`)
@@ -111,13 +115,14 @@ export function DocPage({ slug, title }: DocPageProps) {
             }
             out.push("")
           } else {
-            // Paragraph — handle inline code and links
+            // Paragraph — handle inline code, links, and bold
             let p = line
               .replace(/&/g, "&amp;")
               .replace(/</g, "&lt;")
               .replace(/>/g, "&gt;")
               .replace(/`([^`]+)`/g, '<code class="rounded bg-background px-1.5 py-0.5 text-xs text-foreground">$1</code>')
               .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:text-primary-hover">$1</a>')
+              .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-medium text-foreground">$1</strong>')
             out.push(`<p class="text-sm text-foreground-secondary mb-3">${p}</p>`)
           }
         }

@@ -9,12 +9,22 @@ export const metadata: Metadata = {
 const DOCS = [
   {
     title: "Quickstart",
-    description: "Install, authenticate, submit your first job in under a minute.",
+    description: "Install the SDK, submit your first training job, and run inference — in under five minutes.",
     href: "/docs/quickstart",
   },
   {
+    title: "Connect your GPU",
+    description: "Bring your own hardware to the Yarn network. Free compute, your data residency.",
+    href: "/docs/connect-gpu",
+  },
+  {
+    title: "Billing",
+    description: "How credits work, GPU rates, budget controls, and auto-reload.",
+    href: "/docs/billing",
+  },
+  {
     title: "API reference",
-    description: "Full endpoint reference — chat completions, models, jobs, sessions, billing.",
+    description: "Full endpoint reference — chat completions, embeddings, jobs, sessions, storage, billing.",
     href: "/docs/api-reference",
   },
 ]

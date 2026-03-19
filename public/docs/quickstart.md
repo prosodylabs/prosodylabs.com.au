@@ -1,167 +1,167 @@
-# Yarn SDK Quickstart
+# Quickstart
 
-## Install
+Get from zero to running code on a GPU in under five minutes.
 
-```bash
-# One command — registers your machine, detects GPUs, joins the network
-curl -fsSL https://yarn.prosodylabs.com.au/install | sh
+## 1. Create an account
 
-# Authenticate
-yarn login
-```
+Sign up at [account.yarn.prosodylabs.com.au](https://account.yarn.prosodylabs.com.au/signup). You'll need an invitation — request one on the signup page.
 
-## Python SDK
+Once approved, sign in and generate an API key from **Settings > API Keys**.
+
+## 2. Install the SDK
 
 ```bash
-pip install yarn-au
+pip install yarn-sdk
 ```
 
-## Training Jobs
+Set your API key:
 
-Submit a training job — Yarn handles GPU scheduling, containerisation, and result retrieval.
+```bash
+export YARN_API_KEY=yarn_your_api_key_here
+```
+
+## 3. Submit a training job
+
+Create a file called `train.py`:
+
+```python
+import torch
+
+print(f"CUDA available: {torch.cuda.is_available()}")
+print(f"Device: {torch.cuda.get_device_name(0)}")
+
+# Your training code here
+x = torch.randn(1000, 1000, device="cuda")
+result = x @ x.T
+print(f"Matrix multiply on GPU: {result.shape}")
+```
+
+Submit it:
 
 ```python
 import yarn
 
-job = yarn.submit_job(
-    directory="./my-experiment",   # bundles .py, .yaml, .json files
-    gpu="rtx4090",                 # or "auto" for cheapest available
-    entrypoint="train.py"          # auto-detected if main.py/train.py/run.py
+client = yarn.Client()
+
+job = client.jobs.submit(
+    name="my-first-job",
+    script="train.py",
+    gpu="rtx-4090",
 )
 
-job.wait()
-print(job.status)    # "completed"
-print(job.result)    # stdout/stderr
-print(job.metrics)   # loss, GPU hours, cost
+print(f"Job submitted: {job['id']}")
+
+# Wait for completion
+result = client.jobs.wait(job["id"])
+print(f"Status: {result['status']}")
+
+# Stream logs
+for line in client.jobs.stream_logs(job["id"]):
+    print(line)
 ```
 
 ### Multi-file projects
 
-```python
-# Automatically bundles all .py/.yaml/.json files in the directory
-job = yarn.submit_job(directory="./kairos-experiment")
+Point the SDK at a directory and it bundles everything automatically:
 
-# Or specify individual files
-job = yarn.submit_job(
-    code="import torch; print(torch.cuda.is_available())",
-    gpu="auto"
+```python
+job = client.jobs.submit(
+    name="kairos-experiment",
+    directory="./my-experiment",   # bundles .py, .yaml, .json, .sh files
+    gpu="rtx-4090",
+    entrypoint="python /home/ray/code/train.py",
 )
 ```
 
-## Interactive Sessions
+The SDK auto-detects `main.py`, `train.py`, or `run.py` as the entrypoint if you don't specify one.
 
-Launch an interactive GPU session with Jupyter, SSH, or Ray.
+### Cost estimates
 
-```python
-session = yarn.session(
-    gpu="rtx4090",
-    hours=4                        # auto-checkpoints on expiry
-)
-
-print(session.jupyter_url)         # https://s-abc123.research.prosodylabs.com.au
-print(session.ssh)                 # ssh researcher@s-abc123.yarn
-print(session.ray_address)         # ray://s-abc123.yarn:10001
-```
-
-## Inference
-
-### Register a model
+Check what a job will cost before submitting:
 
 ```python
-# Register your own model from HuggingFace
-yarn.models.register(
-    name="my-org/llama-3-70b",
-    source="huggingface",
-    compute="auto"                 # Yarn picks the cheapest GPU
+estimate = client.jobs.estimate(
+    gpu="rtx-4090",
+    max_runtime_hours=4,
 )
-
-# Or specify exact compute
-yarn.models.register(
-    name="my-org/llama-3-70b",
-    source="huggingface",
-    compute="rtx4090"
-)
+print(estimate)  # {"estimated_cost": 2.00, "currency": "AUD", ...}
 ```
 
-### Use an existing model
+## 4. Interactive GPU sessions
+
+Launch a session and use it like a PyTorch device:
 
 ```python
-# OpenAI-compatible — drop-in replacement
-response = yarn.chat(
-    model="my-org/llama-3-70b",
-    messages=[{"role": "user", "content": "Hello"}]
-)
-print(response.choices[0].message.content)
+import yarn
+
+with yarn.session(gpu="rtx-4090") as device:
+    import torch
+    model = torch.nn.Linear(100, 10).to(device)
+
+    # Log metrics back to Yarn
+    device.log({"epoch": 1, "loss": 0.42})
+
+    # Save checkpoints to Yarn storage
+    device.save("model.pt", local_path="./model.pt")
 ```
 
-### OpenAI SDK compatibility
+Sessions provide a Ray endpoint, dashboard URL, and auto-checkpoint on idle timeout.
+
+## 5. Chat inference
+
+Yarn's inference API is OpenAI-compatible. Use the Yarn SDK or the OpenAI SDK — just change the base URL.
+
+### With the Yarn SDK
+
+```python
+import yarn
+
+client = yarn.Client()
+response = client.chat.completions(
+    model="Qwen/Qwen3.5-0.8B",
+    messages=[{"role": "user", "content": "Hello from Yarn"}],
+)
+print(response["choices"][0]["message"]["content"])
+```
+
+### With the OpenAI SDK
 
 ```python
 from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.au.yarn.prosodylabs.com.au/v1",
-    api_key="your-yarn-api-key"
+    api_key="your-yarn-api-key",
 )
 
 response = client.chat.completions.create(
-    model="my-org/llama-3-70b",
-    messages=[{"role": "user", "content": "Hello"}]
+    model="Qwen/Qwen3.5-0.8B",
+    messages=[{"role": "user", "content": "Hello from Yarn"}],
 )
+print(response.choices[0].message.content)
 ```
 
-## BYO GPU
-
-Connect your own hardware to the Yarn network — free forever.
-
-```bash
-# On any machine with a GPU
-curl -fsSL https://yarn.prosodylabs.com.au/install | sh
-
-# Join an organisation
-yarn join my-university --token <invite-token>
-```
-
-Your GPU is now part of the network. Yarn handles scheduling, isolation, and (optional) billing. Share compute between teams, labs, or an entire institution.
-
-## Budget Controls
+### Streaming
 
 ```python
-# Set spending limits
-yarn.budget.set(
-    monthly_limit=100.00,          # AUD
-    alert_thresholds=[50, 75, 100] # percentage alerts
-)
-
-# Check balance
-print(yarn.balance())              # {"available": 87.50, "currency": "AUD"}
+for chunk in client.chat.completions.create(
+    model="Qwen/Qwen3.5-0.8B",
+    messages=[{"role": "user", "content": "Explain RLHF briefly"}],
+    stream=True,
+):
+    print(chunk.choices[0].delta.content or "", end="")
 ```
 
-## Authentication
+## What's next
 
-```python
-import yarn
-
-# API key authentication (recommended for scripts)
-yarn.api_key = "your-api-key"
-
-# Or environment variable
-# export YARN_API_KEY=your-api-key
-
-# Or interactive login
-yarn.login()
-```
-
-## Data Residency
-
-All compute runs on Australian infrastructure. Your data never leaves Australian soil. Sovereign models are hosted on bare-metal hardware in Perth, Western Australia.
-
-When you need more capacity, Yarn can provision cloud GPUs — you control whether your workload stays sovereign (AU only) or can overflow to international providers.
+- [API Reference](/docs/api-reference) — full endpoint docs
+- [Connect your GPU](/docs/connect-gpu) — bring your own hardware
+- [Billing](/docs/billing) — how pricing and credits work
 
 ---
 
 **API base URL:** `https://api.au.yarn.prosodylabs.com.au/v1`
 
-**SDK:** `pip install yarn-au` | [GitHub](https://github.com/prosodylabs/yarn)
+**SDK:** `pip install yarn-sdk` | [GitHub](https://github.com/prosodylabs/yarn)
 
 **Support:** jordan@prosodylabs.com.au
