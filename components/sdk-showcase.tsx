@@ -17,7 +17,7 @@ const TABS: { label: string; lang: string; code: string }[] = [
 import torch
 
 # Your code. Wrap it in a session and it runs on a GPU.
-with yarn.session(gpu="rtx4090") as device:
+with yarn.session(gpu="rtx-4090") as device:
     model = MyModel().to(device)
     optimizer = torch.optim.Adam(model.parameters())
 
@@ -37,7 +37,7 @@ with yarn.session(gpu="rtx4090") as device:
 # picks a GPU, streams logs, saves checkpoints.
 job = yarn.submit(
     directory="./my-experiment",
-    gpu="rtx4090",              # or "auto"
+    gpu="rtx-4090",              # or "auto"
 )
 
 for line in job.stream_logs():
@@ -82,14 +82,14 @@ $ curl ... | sudo bash -s -- --token <token> --dry-run`,
     label: "Client",
     lang: "bash",
     code: `# For researchers — no sudo, no GPU required:
-$ pip install yarn-au
+$ pip install yarn-sdk
 $ yarn login
 Authenticated as jordan@prosodylabs.com.au
 
 # Submit jobs, start sessions, query models
 # from your laptop. Yarn finds the GPU.
 $ yarn gpus
-  rtx4090 (24GB) — BYO, online
+  rtx-4090 (24GB) — BYO, online
   h100    (80GB) — managed, $2.50/hr`,
   },
 ]
