@@ -45,8 +45,8 @@ export function Footer() {
               Prosody Labs
             </span>
             <p className="mt-3 text-sm leading-relaxed text-foreground-muted">
-              Sovereign AI infrastructure for Australian research and
-              enterprise. Your data stays in Australia.
+              GPU compute for Australian research and enterprise —
+              with optional sovereign data residency.
             </p>
             <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-sovereign-muted px-3 py-1">
               <span className="h-1.5 w-1.5 rounded-full bg-sovereign" />

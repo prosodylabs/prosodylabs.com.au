@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Simple, transparent pricing for sovereign AI compute. BYO GPU for free, or pay as you go from $0.20/hr.",
+    "Simple, transparent pricing for GPU compute. BYO GPU for free, or pay as you go from $1.50/hr.",
 }
 
 const TIERS = [
@@ -27,7 +27,7 @@ const TIERS = [
   },
   {
     name: "Managed compute",
-    price: "From $0.20/hr",
+    price: "From $1.50/hr",
     period: "AUD",
     description:
       "Set clear budgets and plan your spending. Per-second billing, full cost visibility, no surprises.",
@@ -36,7 +36,7 @@ const TIERS = [
       "Per-second billing — no idle charges",
       "Budget limits and alerts at user, team, and institution level",
       "Training jobs, sessions, and notebooks",
-      "Chat and API inference (sovereign models)",
+      "Chat and API inference",
       "Auto-reload and spend controls",
     ],
     cta: "Add balance",
@@ -46,9 +46,10 @@ const TIERS = [
 ]
 
 const GPU_RATES = [
-  { name: "RTX 4090", vram: "24 GB", sovereign: "$0.50/hr", overseas: "$0.40/hr" },
-  { name: "H100 SXM", vram: "80 GB", sovereign: "$3.00/hr", overseas: "$2.40/hr" },
-  { name: "T4", vram: "16 GB", sovereign: "$0.30/hr", overseas: "$0.24/hr" },
+  { name: "RTX 4090", vram: "24 GB", sovereign: "$1.50/hr", overseas: "$1.20/hr" },
+  { name: "A100 40GB", vram: "40 GB", sovereign: "$3.50/hr", overseas: "$2.80/hr" },
+  { name: "A100 80GB", vram: "80 GB", sovereign: "$5.00/hr", overseas: "$4.00/hr" },
+  { name: "H100 SXM", vram: "80 GB", sovereign: "$8.00/hr", overseas: "$6.50/hr" },
 ]
 
 export default function PricingPage() {
@@ -63,7 +64,7 @@ export default function PricingPage() {
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary">
             BYO GPU is free — we manage the platform, you bring the hardware.
             Need more compute? Pay as you go, billed per-second in AUD. No
-            subscriptions, no reserved instances.
+            reserved instances, no lock-in.
           </p>
         </div>
       </section>
@@ -185,7 +186,8 @@ export default function PricingPage() {
           </div>
           <p className="mt-4 text-center text-xs text-foreground-muted">
             Rates are in AUD. Sovereign compute runs on bare-metal
-            infrastructure in Perth, Western Australia.
+            infrastructure in Perth, Western Australia. Overseas rates are
+            indicative — actual pricing depends on provider availability.
           </p>
         </div>
       </section>

@@ -3,9 +3,9 @@ import { SdkShowcase } from "@/components/sdk-showcase"
 
 const FEATURES = [
   {
-    title: "Sovereign by default",
+    title: "Sovereign compute, your choice",
     description:
-      "Every request, every token, every byte of training data stays on Australian soil. No data leaves. No exceptions.",
+      "Choose Australian data residency when your work requires it. Sovereign models run entirely on Perth hardware — your data never leaves the country. Global options available for cost-conscious workloads.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
@@ -64,14 +64,14 @@ const PRICING_TIERS = [
   },
   {
     name: "Managed compute",
-    price: "From $0.20/hr",
+    price: "From $1.50/hr",
     description: "Set clear budgets and plan your spending. Per-second billing, full cost visibility, no surprises.",
     features: [
       "Training jobs and interactive GPU sessions",
       "Chat and API inference",
       "Budget limits, alerts, and auto-reload",
       "Per-team and per-user spend controls",
-      "No subscriptions, no lock-in",
+      "No lock-in — cancel anytime",
     ],
     cta: "Request access",
     href: "https://account.yarn.prosodylabs.com.au/signup",
@@ -90,12 +90,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Built for sovereign compute
+              Built for Australian research
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-foreground-secondary">
-              Yarn is a GPU-aware AI platform designed from the ground up for
-              Australian data residency, research workflows, and elastic
-              scaling.
+              Yarn is a GPU compute platform designed for research workflows
+              and elastic scaling — with optional Australian data residency for
+              workloads that require it.
             </p>
           </div>
 

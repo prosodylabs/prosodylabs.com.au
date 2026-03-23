@@ -76,8 +76,8 @@ export function Hero() {
 
         <p className="relative mx-auto mt-6 max-w-2xl text-lg text-foreground-secondary sm:text-xl">
           GPU compute, model hosting, and training jobs — built and
-          operated in Western Australia. Your data never leaves Australian
-          soil. One API, from laptop to cluster.
+          operated in Western Australia. Sovereign compute keeps your data in
+          Australia. Global options available when you need them. One API, from laptop to cluster.
         </p>
 
         <div className="relative mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
